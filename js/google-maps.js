@@ -44,18 +44,19 @@ function initMap() {
 		  // Push the marker to our array of markers.
 		  markers.push(marker);
 		  // Create an onclick event to open an infowindow at each marker.
+		  var infoWindowOn = false;
 		  marker.addListener('click', function() {
 			populateInfoWindow(this, largeInfowindow);
 		  });
 
-		 marker.addListener('mouseover', function() {
-             this.setAnimation(google.maps.Animation.BOUNCE)
-         });
-
-         marker.addListener('mouseout', function(){
-         	this.setAnimation(null);
-         });
+          marker.addListener('click', function() {
+            	this.setIcon(highlightedIcon);
+        });
+          //marker.addListener('mouseout', function() {
+          //  this.setIcon(null);
+          //});
 		}
+		showListings();
 		document.getElementById('show-listings').addEventListener('click', showListings);
 		document.getElementById('hide-listings').addEventListener('click', hideListings);
 }
@@ -103,6 +104,7 @@ function initMap() {
       		animation: google.maps.Animation.BOUNCE
       	})
       }
+
 
       function makeMarkerIcon(markerColor) {
         var markerImage = new google.maps.MarkerImage(
