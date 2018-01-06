@@ -29,15 +29,21 @@ h1 {
   text-align: center;
 }
 
-#hide-listings,
-#show-listings {
-  width: 48%;
-}
-
-#map {
+.showMap {
   bottom:0px;
   height: 100%;
   left: 222px;
+  position: absolute;
+  right: 0px;
+  padding: 0;
+  bottom: 0px;
+  margin: 0;
+}
+
+.hideMap {
+  bottom:0px;
+  height: 100%;
+  left: 0px;
   position: absolute;
   right: 0px;
   padding: 0;
@@ -58,10 +64,14 @@ h1 {
   position: absolute;
 }
 
-#menu-icon {
+.menuIcon {
   position: absolute;
   left: 222px;
   width: 40px;
   margin: 0 0 0 5px;
   z-index: 1;
+}
+
+.menuIconHidden {
+  left: 0px;
 }

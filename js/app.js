@@ -1,6 +1,6 @@
-/* Neighborhood Map Project - Udacity */
+/* Travel Planner - Udacity */
 
-var app = (function() {
+(function() {
 	'use strict';
 
 	// Model
@@ -30,6 +30,16 @@ var app = (function() {
 			self.locationsList.push(new Marker(marker));
 		});
 
+		// Hide or show menu by click on hamburger icon
+		self.showMenu = ko.observable(true);
+		self.ShowHideHamburgerMenu = function() {
+			if (self.showMenu() == true) {
+				self.showMenu(false);
+				showListings();
+			} else {
+				self.showMenu(true);
+			}
+		};
 	};
 
 	ko.applyBindings(new ViewModel())
@@ -58,7 +68,8 @@ function initMap() {
 		{title: 'Aros', location: {lat: 56.153919, lng: 10.199716}},
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
 		{title: 'Den Gamle By', location: {lat: 56.158783, lng: 10.192115}},
-		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}}
+		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}},
+		{title: 'Fitness World - Århus C.', location: {lat: 56.144076, lng: 10.199951}}
 	]
 
 	var largeInfowindow = new google.maps.InfoWindow();

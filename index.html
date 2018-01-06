@@ -7,15 +7,15 @@
   </head>
   <body>
     <div class="container">
-      <div class="options-box">
+      <div data-bind="visible: showMenu" class="options-box">
         <h1>Travel planner</h1>
         <input>
         <ul data-bind="foreach: locationsList">
           <li data-bind="text: title"></li>
         </ul>
       </div>
-      <img id="menu-icon" src="img/menu-icon.png">
-      <div id="map"></div>
+      <img data-bind="click: ShowHideHamburgerMenu, css: { menuIconHidden: showMenu() == false }" class="menuIcon" src="img/menu-icon.png">
+      <div id="map" class="showMap" data-bind="css: { hideMap: showMenu() == false }"></div>
     </div>
 
     <script src="js/lib/knockout-3.4.2.js"></script>
