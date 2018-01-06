@@ -36,10 +36,8 @@
 		self.ShowHideHamburgerMenu = function() {
 			if (self.showMenu() == true) {
 				self.showMenu(false);
-				initMap();
 			} else {
 				self.showMenu(true);
-				initMap();
 			}
 		};
 	};
