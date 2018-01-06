@@ -10,7 +10,8 @@
 		{title: 'Aros', location: {lat: 56.153919, lng: 10.199716}},
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
 		{title: 'Den Gamle By', location: {lat: 56.158783, lng: 10.192115}},
-		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}}
+		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}},
+		{title: 'Fitness World - Århus C.', location: {lat: 56.144076, lng: 10.199951}}
 	];
 
 	// Binding model to KO for automatic UI refresh
@@ -35,7 +36,6 @@
 		self.ShowHideHamburgerMenu = function() {
 			if (self.showMenu() == true) {
 				self.showMenu(false);
-				showListings();
 			} else {
 				self.showMenu(true);
 			}
@@ -51,6 +51,7 @@
 
 var map;
 var markers = [];
+var markerSelected;
 
 // QQ: How could I put initMap and supporting functions in the ViewModel in the IIFE?
 function initMap() {
@@ -77,7 +78,8 @@ function initMap() {
 	// Create a "highlighted location" marker color for when the user
 	// click location.
 	var highlightedIcon = makeMarkerIcon('FF9933');
-		
+	var markerSelected;
+
 	// The following group uses the location array to create an array of markers on initialize.
 	for (var i = 0; i < locations.length; i++) {
 		// Get the position from the location array.
@@ -99,8 +101,8 @@ function initMap() {
 		});
 
 		marker.addListener('click', function() {
-			this.setIcon(highlightedIcon);
-		});	
+			setIconOnMarker(this, highlightedIcon)
+		})
 	};
 	
 	showListings();
@@ -122,6 +124,18 @@ function populateInfoWindow(marker, infowindow) {
 	};
 };
 
+function setIconOnMarker(marker, highlightedIcon) {
+	// Check if marker has been selected
+	if (markerSelected == null) {
+		marker.setIcon(highlightedIcon);
+		markerSelected = marker;
+	} else {
+		markerSelected.setIcon(null);
+		marker.setIcon(highlightedIcon);
+		markerSelected = marker;
+	}
+};
+
 // This function will loop through the markers array and display them all.
 function showListings() {
 	var bounds = new google.maps.LatLngBounds();
@@ -136,13 +150,6 @@ function showListings() {
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
 // of 0, 0 and be anchored at 10, 34).
-function highlightMarker() {
-	var highlightedMarker = new google.maps.Marker({
-		animation: google.maps.Animation.BOUNCE
-	});
-};
-
-
 function makeMarkerIcon(markerColor) {
 	var markerImage = new google.maps.MarkerImage(
   		'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
