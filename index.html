@@ -7,10 +7,10 @@
   </head>
   <body>
     <div class="container">
-      <div data-bind="visible: showMenu" class="options-box">
-        <h1>Travel planner</h1>
-        <input>
-        <ul data-bind="foreach: locationsList">
+      <div data-bind="visible: showMenu" class="locationMenu">
+        <h1 id="locationTitle">Travel planner</h1>
+        <input id="locationSearch">
+        <ul data-bind="foreach: locationsList" id="locationList">
           <li data-bind="text: title"></li>
         </ul>
       </div>

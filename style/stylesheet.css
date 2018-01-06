@@ -5,63 +5,41 @@ html, body {
   padding: 0;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 0 5px;
-  line-height: 25px;
-  font-size: 15px;
-}
-
 .container {
   height: 100%;
   position: relative;
 }
 
-input {
-  font-size: 12px;
-}
-
-h1 {
-  color: #525454;
-  font-size: 22px;
-  margin: 0 0 5px 0;
-  text-align: center;
-}
-
-.showMap {
-  bottom:0px;
-  height: 100%;
-  left: 222px;
-  position: absolute;
-  right: 0px;
-  padding: 0;
-  bottom: 0px;
-  margin: 0;
-}
-
-.hideMap {
-  bottom:0px;
-  height: 100%;
-  left: 0px;
-  position: absolute;
-  right: 0px;
-  padding: 0;
-  bottom: 0px;
-  margin: 0;
-}
-
-.options-box {
+.locationMenu {
   background: #fff;
   border: 1px solid #999;
   border-radius: 5px;
   height: 100%;
   line-height: 35px;
   padding: 10px 10px 0px 10px;
-  text-align: left;
   width: 200px;
   margin: 0;
   position: absolute;
+}
+
+#locationTitle {
+  color: #000;
+  font-size: 22px;
+  margin: 0 0 5px 5px;
+}
+
+#locationSearch {
+  font-size: 12px;
+  margin: 0 0 10px 5px;
+  width: 90%;
+}
+
+#locationList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 5px;
+  line-height: 25px;
+  font-size: 15px;
 }
 
 .menuIcon {
@@ -74,4 +52,24 @@ h1 {
 
 .menuIconHidden {
   left: 0px;
+}
+
+.showMap {
+  position: absolute;
+  bottom:0px;
+  height: 100%;
+  left: 222px;
+  right: 0px;
+  padding: 0;
+  margin: 0;
+}
+
+.hideMap {
+  position: absolute;
+  bottom:0px;
+  height: 100%;
+  left: 0px;
+  right: 0px;
+  padding: 0;
+  margin: 0;
 }
