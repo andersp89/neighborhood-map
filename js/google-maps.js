@@ -26,7 +26,7 @@ function initMap() {
 	var largeInfowindow = new google.maps.InfoWindow();
 
 	// Create a "highlighted location" marker color for when the user
-    // mouses over the marker.
+    // click location.
 	var highlightedIcon = makeMarkerIcon('FF9933');
 
 		// The following group uses the location array to create an array of markers on initialize.
@@ -51,7 +51,7 @@ function initMap() {
 
           marker.addListener('click', function() {
             	this.setIcon(highlightedIcon);
-        });
+        	});
           //marker.addListener('mouseout', function() {
           //  this.setIcon(null);
           //});
