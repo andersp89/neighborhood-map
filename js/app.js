@@ -36,8 +36,10 @@
 		self.ShowHideHamburgerMenu = function() {
 			if (self.showMenu() == true) {
 				self.showMenu(false);
+				initMap();
 			} else {
 				self.showMenu(true);
+				initMap();
 			}
 		};
 	};
@@ -86,10 +88,10 @@ function initMap() {
 		var position = locations[i].location;
 		var title = locations[i].title;
 		// Create a marker per location, and put into markers array.
+
 		var marker = new google.maps.Marker({
 			position: position,
 			title: title,
-			animation: google.maps.Animation.DROP,
 			id: i
 		});
 		// Push the marker to our array of markers.
@@ -104,7 +106,6 @@ function initMap() {
 			setIconOnMarker(this, highlightedIcon)
 		})
 	};
-	
 	showListings();
 };
 
