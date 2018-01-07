@@ -9,18 +9,22 @@
     <div class="container">
       <div data-bind="visible: showMenu" class="locationMenu">
         <h1 id="locationTitle">Travel planner</h1>
-        <input id="locationSearch" placeholder="Search location here">
+        <div id="searchArea">
+          <input id="locationSearch" placeholder="Search location here">
+          <button>Search</button>
+        </div>
         <ul data-bind="foreach: locationsList" id="locationList">
-          <li data-bind="text: title, click: $parent.setCurrentLocation"></li>
+          <li data-bind="text: title, click: $parent.setCurrentLocation" id="locationListItems"></li>
         </ul>
       </div>
       <img data-bind="click: ShowHideHamburgerMenu, css: { menuIconHidden: showMenu() == false }" class="menuIcon" src="img/menu-icon.png">
       <div id="map" class="showMap" data-bind="css: { hideMap: showMenu() == false }"></div>
     </div>
 
-    <script src="js/lib/knockout-3.4.2.js"></script>
-    <script async defer src="js/app.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-hq8EqvtnECLXgtwoawa-ZZrrKM97Q28&v=3&callback=initMap"></script>
+  <script src="js/lib/jquery-3.2.1.min.js"></script>
+  <script src="js/lib/knockout-3.4.2.js"></script>
+  <script async defer src="js/app.js"></script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-hq8EqvtnECLXgtwoawa-ZZrrKM97Q28&v=3&callback=initMap"></script>
 
   </body>
 </html>

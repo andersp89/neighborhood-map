@@ -39,15 +39,17 @@
 		self.ShowHideHamburgerMenu = function() {
 			if (self.showMenu() == true) {
 				self.showMenu(false);
+				showListings();
 			} else {
 				self.showMenu(true);
+				showListings();
 			}
 		};
 
 		// Set current location
 		self.currentLocation = ko.observable( self.locationsList()[0] );
 		self.setCurrentLocation = function(newLocation) {
-			// Initiate all variables needed, to create markers at map
+			// Initiate variables, to create markers at map
 			self.currentLocation(newLocation);			
 			var title = self.currentLocation().title()
 			var id = getId(title);
@@ -130,62 +132,65 @@ function setInfoWindow(marker, infowindow) {
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
-        // Check to make sure the infowindow is not already opened on this marker.
-        if (infowindow.marker != marker) {
-          // Clear the infowindow content to give the streetview time to load.
-          infowindow.setContent('');
-          infowindow.marker = marker;
-          // Make sure the marker property is cleared if the infowindow is closed.
-          infowindow.addListener('closeclick', function() {
-            infowindow.marker = null;
-          });
-          var streetViewService = new google.maps.StreetViewService();
-          var radius = 50;
-          // In case the status is OK, which means the pano was found, compute the
-          // position of the streetview image, then calculate the heading, then get a
-          // panorama from that and set the options
-          function getStreetView(data, status) {
-            if (status == google.maps.StreetViewStatus.OK) {
-              var nearStreetViewLocation = data.location.latLng;
-              var heading = google.maps.geometry.spherical.computeHeading(
-                nearStreetViewLocation, marker.position);
-                infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
-                var panoramaOptions = {
-                  position: nearStreetViewLocation,
-                  pov: {
-                    heading: heading,
-                    pitch: 30
-                  }
-                };
-              var panorama = new google.maps.StreetViewPanorama(
-                document.getElementById('infoWindowPano'), panoramaOptions);
-            } else {
-              infowindow.setContent('<div>' + marker.title + '</div>' +
-                '<div>No Street View Found</div>');
-            }
-          }
-          // Use streetview service to get the closest streetview image within
-          // 50 meters of the markers position
+		
+		findYoutubeVideoWithTitle(marker);
 
-          streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-          // Open the infowindow on the correct marker.
-          infowindow.open(map, marker);
-        }	
+		// Check to make sure the infowindow is not already opened on this marker.
+		if (infowindow.marker != marker) {
+		  // Clear the infowindow content to give the streetview time to load.
+		  infowindow.setContent('');
+		  infowindow.marker = marker;
+		  // Make sure the marker property is cleared if the infowindow is closed.
+		  infowindow.addListener('closeclick', function() {
+			infowindow.marker = null;
+		  });
+		  var streetViewService = new google.maps.StreetViewService();
+		  var radius = 50;
+		  // In case the status is OK, which means the pano was found, compute the
+		  // position of the streetview image, then calculate the heading, then get a
+		  // panorama from that and set the options
+		  function getStreetView(data, status) {
+			if (status == google.maps.StreetViewStatus.OK) {
+			  var nearStreetViewLocation = data.location.latLng;
+			  var heading = google.maps.geometry.spherical.computeHeading(
+				nearStreetViewLocation, marker.position);
+				infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
+				var panoramaOptions = {
+				  position: nearStreetViewLocation,
+				  pov: {
+					heading: heading,
+					pitch: 30
+				  }
+				};
+			  var panorama = new google.maps.StreetViewPanorama(
+				document.getElementById('infoWindowPano'), panoramaOptions);
+			} else {
+			  infowindow.setContent('<div>' + marker.title + '</div>' +
+				'<div>No Street View Found</div>');
+			}
+		  }
 
-	/*if (windowOpened == null && infowindow.marker != marker) {
-		infowindow.marker = marker;
-		infowindow.setContent('<div>' + marker.title + '</div>');
-		infowindow.open(map, marker);
-		windowOpened = infowindow;
 
-	} else {
-		windowOpened.close();
-		infowindow.marker = marker;
-		infowindow.setContent('<div>' + marker.title + '</div>');
-		infowindow.open(map, marker);
-		windowOpened = infowindow;
-	};*/
+		  // Use streetview service to get the closest streetview image within
+		  // 50 meters of the markers position
+
+		  streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+		  // Open the infowindow on the correct marker.
+		  infowindow.open(map, marker);
+		}
 };
+
+function findYoutubeVideoWithTitle(marker) {
+	var title = marker.title;
+
+	//code here
+	// infowindow.setContent
+
+	// API key with KEY parameter.
+
+
+};
+
 
 var createMarkerArray = (function(array) {
 	return function() {
@@ -233,11 +238,76 @@ function showListings() {
 // of 0, 0 and be anchored at 10, 34).
 function makeMarkerIcon(markerColor) {
 	var markerImage = new google.maps.MarkerImage(
-  		'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
-  		'|40|_|%E2%80%A2',
+		'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+		'|40|_|%E2%80%A2',
 		new google.maps.Size(21, 34),
 		new google.maps.Point(0, 0),
 		new google.maps.Point(10, 34),
 		new google.maps.Size(21,34));
 	return markerImage;
 };
+
+var token = 'Bearer 16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx';
+
+/*
+$(document).ready(function() {
+	$.ajax({
+        method: 'GET',
+        url: 'https://api.yelp.com/v3/businesses/matches/best',
+        beforeSend: function(request) {
+        	request.setRequestHeader('Authorization:', 'Bearer ' + token);
+        },
+        data: {
+			'name': 'trifork',
+			'city': 'aarhus',
+			'state': '82',
+			'country': 'DK'
+		},
+		error: function(data, status) {
+			alert(status)
+		},
+		success: function(data, status) { 
+			alert(status);
+		}
+      });
+})
+*/
+
+
+$(document).ready(function() {
+	$.ajax({
+        method: 'GET',
+        url: 'https://api.yelp.com/v3/businesses/search',
+        beforeSend: function(request) {
+        	request.setRequestHeader('Authorization', 'Bearer 16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx');
+        },
+        data: {
+			'term': 'trifork',
+			'latitude': '56.155178',
+			'longitude': '10.209552',
+			'radius': '200'
+		},
+		error: function(data, status, error) {
+			alert(status + '<br>' + error)
+		},
+		success: function(data, status) { 
+			alert(status);
+		}
+      });
+})
+
+
+
+// Ajax call to youtube API
+/*
+$(document).ready(function(data){
+	$.get('https://api.yelp.com/v3/businesses/search',
+	{
+		'term': 'Köd Restaurant',
+		'latitude': '56.155178',
+		'longitude': '10.209552'
+		},
+	alert("hello" + data))
+});
+*/
+

@@ -29,10 +29,14 @@ html, body {
   margin: 0 0 5px 5px;
 }
 
+#searhArea {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 #locationSearch {
   font-size: 12px;
   margin: 0 0 10px 5px;
-  width: 90%;
 }
 
 #locationList {
@@ -85,4 +89,8 @@ html, body {
   font-size: 15px;
   font-weight: bold;
   line-height: 25px;
+}
+
+#execute-request-button {
+  margin-top: 50px;
 }

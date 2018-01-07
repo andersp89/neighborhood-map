@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Travel planner - Udacity Project 4</title>
+    <link rel="stylesheet" href="style/stylesheet.css">
+  </head>
+  <body>
+  <script src="js/lib/jquery-3.2.1.min.js"></script>
+
+
+<script>
+$(document).ready(function() {
+	alert("he he");
+})
+
+$(document).ready(function() {
+	$.ajax({
+        type: 'GET',
+        url: 'https://api.yelp.com/v3/businesses/matches/best',
+        beforeSend: function(xhr){xhr.setRequestHeader('Authorization:', 'Bearer 16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx')},
+        data: {
+		'name': 'trifork',
+		'city': 'aarhus',
+		'state': '82',
+		'country': 'DK',
+		},
+		success: function() {alert ("hello")}
+        //success: function(data) { alert('success!' + data)}
+      });
+})
+
+</script>
+
+  </body>
+</html>
+
+
