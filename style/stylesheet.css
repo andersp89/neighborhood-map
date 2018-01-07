@@ -10,11 +10,12 @@ html, body {
   position: relative;
 }
 
+/* Menu Left */
 .locationMenu {
   background: #fff;
   border: 1px solid #999;
   border-radius: 5px;
-  height: 98.3%;
+  height: 100%;
   line-height: 35px;
   padding: 10px 10px 0px 10px;
   width: 200px;
@@ -54,6 +55,7 @@ html, body {
   left: 0px;
 }
 
+/* Map */
 .showMap {
   position: absolute;
   bottom:0px;
@@ -72,4 +74,15 @@ html, body {
   right: 0px;
   padding: 0;
   margin: 0;
+}
+
+#infoWindowPano {
+  width: 200px;
+  height: 200px;
+}
+
+#infoWindowTitle {
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 25px;
 }
