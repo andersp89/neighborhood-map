@@ -57,7 +57,7 @@
 			setIconOnMarker(array[id], highlightedIcon);
 			
 			var largeInfowindow = new google.maps.InfoWindow();
-			populateInfoWindow(array[id], largeInfowindow)	
+			setInfoWindow(array[id], largeInfowindow)	
 		};
 	};
 
@@ -103,7 +103,7 @@ function initMap() {
 
 		// Create an onclick event to open an infowindow at each marker.
 		marker.addListener('click', function() {
-			populateInfoWindow(this, largeInfowindow);
+			setInfoWindow(this, largeInfowindow);
 		});
 
 		marker.addListener('click', function() {
@@ -115,8 +115,16 @@ function initMap() {
 };
 
 function setInfoWindow(marker, infowindow) {
-	// code here
-}
+	// code here to control listitem and 
+	if (windowOpened == null) {
+		populateInfoWindow(marker, infowindow);
+		windowOpened = infowindow;
+	} else {
+		windowOpened.close();
+		populateInfoWindow(marker,infowindow);
+		windowOpened = infowindow;
+	}
+};
 
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
