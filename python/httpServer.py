@@ -1,21 +1,7 @@
-# -*- coding: utf-8 -*-
-"""
-Yelp Fusion API code sample.
+#!/usr/bin/python3
 
-This program demonstrates the capability of the Yelp Fusion API
-by using the Search API to query for businesses by a search term and location,
-and the Business API to query additional information about the top result
-from the search query.
+# Look at official yelp github python doc! as it comes from there!
 
-Please refer to http://www.yelp.com/developers/v3/documentation for the API
-documentation.
-
-This program requires the Python requests library, which you can install via:
-`pip install -r requirements.txt`.
-
-Sample usage of the program:
-`python sample.py --term="bars" --location="San Francisco, CA"`
-"""
 from __future__ import print_function
 
 import argparse
@@ -24,48 +10,35 @@ import pprint
 import requests
 import sys
 import urllib
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+from urllib.error import HTTPError
+from urllib.parse import quote
+from urllib.parse import urlencode
+
+# Secret Yelp API Key
+API_KEY = '16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx'
 
 
-# This client code can run on Python 2.x or 3.x.  Your imports can be
-# simpler if you only need one of those.
-try:
-    # For Python 3.0 and later
-    from urllib.error import HTTPError
-    from urllib.parse import quote
-    from urllib.parse import urlencode
-except ImportError:
-    # Fall back to Python 2's urllib2 and urllib
-    from urllib2 import HTTPError
-    from urllib import quote
-    from urllib import urlencode
-
-
-# Yelp Fusion no longer uses OAuth as of December 7, 2017.
-# You no longer need to provide Client ID to fetch Data
-# It now uses private keys to authenticate requests (API Key)
-# You can find it on
-# https://www.yelp.com/developers/v3/manage_app
-API_KEY= None 
-
-
-# API constants, you shouldn't have to change these.
+# API constants
 API_HOST = 'https://api.yelp.com'
 SEARCH_PATH = '/v3/businesses/search'
 BUSINESS_PATH = '/v3/businesses/'  # Business ID will come after slash.
 
 
 # Defaults for our simple example.
-DEFAULT_TERM = 'dinner'
-DEFAULT_LOCATION = 'San Francisco, CA'
-SEARCH_LIMIT = 3
+# TODO: To be connected with AJAX call from frontend.
+DEFAULT_TERM = 'Aros'
+DEFAULT_LOCATION = 'Aarhus, DK'
+SEARCH_LIMIT = 1
 
-
+# Request helper function
 def request(host, path, api_key, url_params=None):
     """Given your API_KEY, send a GET request to the API.
 
     Args:
-        host (str): The domain host of the API.
-        path (str): The path of the API after the domain.
+        host (str): API_HOST
+        path (str): SEARCH_PATH
         API_KEY (str): Your API Key.
         url_params (dict): An optional set of query parameters in the request.
 
@@ -87,7 +60,7 @@ def request(host, path, api_key, url_params=None):
 
     return response.json()
 
-
+# Search for businesses
 def search(api_key, term, location):
     """Query the Search API by a search term and location.
 
@@ -106,7 +79,7 @@ def search(api_key, term, location):
     }
     return request(API_HOST, SEARCH_PATH, api_key, url_params=url_params)
 
-
+# Get information of business
 def get_business(api_key, business_id):
     """Query the Business API by a business ID.
 
@@ -120,7 +93,7 @@ def get_business(api_key, business_id):
 
     return request(API_HOST, business_path, api_key)
 
-
+# Make query to Yelp API
 def query_api(term, location):
     """Queries the API by the input values from the user.
 
@@ -133,21 +106,46 @@ def query_api(term, location):
     businesses = response.get('businesses')
 
     if not businesses:
-        print(u'No businesses for {0} in {1} found.'.format(term, location))
-        return
+        return (u'No businesses for {0} in {1} found.'.format(term, location))
 
     business_id = businesses[0]['id']
 
+    '''
     print(u'{0} businesses found, querying business info ' \
         'for the top result "{1}" ...'.format(
             len(businesses), business_id))
+    '''
+    
     response = get_business(API_KEY, business_id)
 
-    print(u'Result for business "{0}" found:'.format(business_id))
-    pprint.pprint(response, indent=2)
+    return response
+    # print(u'Result for business "{0}" found:'.format(business_id))
+    # pprint.pprint(response, indent=2)
 
+    # Return JSON
+
+# Simple HTTP Server for development only
+class WebServerHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+        if self.path.endswith("/yelp-api"):
+
+            # restaurants = session.query(Restaurant).all()
+            output = ""
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            output += "<html><body>"
+            output += "Monkey!"
+            output += "</body></html>"
+            self.wfile.write(output.encode())
+            return
+        else:
+            self.send_error(404, 'File hehe Not Found: %s' % self.path)
 
 def main():
+    
+    '''
     parser = argparse.ArgumentParser()
 
     parser.add_argument('-q', '--term', dest='term', default=DEFAULT_TERM,
@@ -157,17 +155,16 @@ def main():
                         help='Search location (default: %(default)s)')
 
     input_values = parser.parse_args()
+    '''
 
     try:
-        query_api(input_values.term, input_values.location)
-    except HTTPError as error:
-        sys.exit(
-            'Encountered HTTP error {0} on {1}:\n {2}\nAbort program.'.format(
-                error.code,
-                error.url,
-                error.read(),
-            )
-        )
+        port = 8080
+        server = HTTPServer(('', port), WebServerHandler)
+        print ("Web server running on port %s" % port)
+        server.serve_forever()
+    except:
+        print (" entered, stopped web server...")
+        server.socket.close()
 
 
 if __name__ == '__main__':

@@ -11,6 +11,12 @@ Flask web app supporting CRUD operations on a catalog with categories and items,
 * VirtualBox with Vagrant
 
 ## Deploy code
+To install the dependencies, run: pip install -r requirements.txt.
+
+Run the code sample without specifying any arguments: python sample.py
+
+Run the code sample by specifying the optional arguments: python sample.py --term="bars" --location="San Francisco, CA"
+
 1. Install VirtualBox: https://www.virtualbox.org/wiki/Download_Old_Builds_5_1
 2. Install Vagrant: https://www.vagrantup.com/downloads.html
 3. Download VM configuration: https://d17h27t6h515a5.cloudfront.net/topher/2017/August/59822701_fsnd-virtual-machine/fsnd-virtual-machine.zip
