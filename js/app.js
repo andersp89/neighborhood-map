@@ -1,7 +1,7 @@
 /* Travel Planner - Udacity */
 
 // QUESTIONS:
-// * How could I put initMap and supporting functions in the ViewModel in the IIFE?
+// * How could I put initMap and supporting functions in the ViewModel in the IIFE, that is currently commented out?
 
 //(function() {
 	//'use strict';
@@ -55,7 +55,7 @@
 			var id = getId(title);
 			var array = createMarkerArray();
 
-			var highlightedIcon = makeMarkerIcon('FF9933');
+			var highlightedIcon = newMarkerIcon('FF9933');
 			setIconOnMarker(array[id], highlightedIcon);
 			
 			var largeInfowindow = newMapsInfoWindow();//new google.maps.InfoWindow();
@@ -90,7 +90,7 @@ function initMap() {
 function populateMapWithMarkers() {
 	var infoWindow = newMapsInfoWindow();
 	// Create a "highlighted location" marker color by click on marker
-	var highlightedIcon = makeMarkerIcon('FF9933');
+	var highlightedIcon = newMarkerIcon('FF9933');
 
 	// Create marker for each entry in locations array
 	for (var i = 0; i < locations.length; i++) {
@@ -151,23 +151,26 @@ function setIconOnMarker(marker, highlightedIcon) {
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
-		// Start loading yelp data
+	// Check to make sure the infowindow is not already opened on this marker.
+	if (infowindow.marker != marker) {
+		// Clear the infowindow content to give the streetview time to load.
+		infowindow.setContent('');
+		infowindow.marker = marker;
+		// Make sure the marker property is cleared if the infowindow is closed.
+		infowindow.addListener('closeclick', function() {
+			infowindow.marker = null;
+	  	});
+		
+		// Retreive data from Yelp about marker location
 		getYelpData(marker);
 
-		// Check to make sure the infowindow is not already opened on this marker.
-		if (infowindow.marker != marker) {
-		  // Clear the infowindow content to give the streetview time to load.
-		  infowindow.setContent('');
-		  infowindow.marker = marker;
-		  // Make sure the marker property is cleared if the infowindow is closed.
-		  infowindow.addListener('closeclick', function() {
-			infowindow.marker = null;
-		  });
-		  var streetViewService = new google.maps.StreetViewService();
-		  var radius = 50;
-		  // In case the status is OK, which means the pano was found, compute the
-		  // position of the streetview image, then calculate the heading, then get a
-		  // panorama from that and set the options
+		//getStreetView();
+
+			var streetViewService = new google.maps.StreetViewService();
+			var radius = 50;
+			// In case the status is OK, which means the pano was found, compute the
+			// position of the streetview image, then calculate the heading, then get a
+			// panorama from that and set the options
 		  
 		function getStreetView(data, status) {
 			if (status == google.maps.StreetViewStatus.OK) {
@@ -261,7 +264,7 @@ function showListings() {
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
 // of 0, 0 and be anchored at 10, 34).
-function makeMarkerIcon(markerColor) {
+function newMarkerIcon(markerColor) {
 	var markerImage = new google.maps.MarkerImage(
 		'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
 		'|40|_|%E2%80%A2',
