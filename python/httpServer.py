@@ -2,19 +2,29 @@
 
 # Look at official yelp github python doc! as it comes from there!
 
-from __future__ import print_function
+# from __future__ import print_function
 
-import argparse
+# import argparse
 import json
-import pprint
+from pprint import pprint
 import requests
 import sys
 import urllib
 from http.server import BaseHTTPRequestHandler, HTTPServer
+from io import StringIO
 
 from urllib.error import HTTPError
 from urllib.parse import quote
 from urllib.parse import urlencode
+
+from flask import Flask, jsonify, request
+from flask_cors import CORS
+
+# from flask.ext.cors import cross_origin
+
+app = Flask(__name__)
+# Enable Cross-Origin Resource Sharing (CORS)
+CORS(app)
 
 # Secret Yelp API Key
 API_KEY = '16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx'
@@ -30,7 +40,7 @@ BUSINESS_PATH = '/v3/businesses/'  # Business ID will come after slash.
 # TODO: To be connected with AJAX call from frontend.
 DEFAULT_TERM = 'Aros'
 DEFAULT_LOCATION = 'Aarhus, DK'
-SEARCH_LIMIT = 1
+SEARCH_LIMIT = 3
 
 # Request helper function
 def request(host, path, api_key, url_params=None):
@@ -54,7 +64,7 @@ def request(host, path, api_key, url_params=None):
         'Authorization': 'Bearer %s' % api_key,
     }
 
-    print(u'Querying {0} ...'.format(url))
+    # print(u'Querying {0} ...'.format(url))
 
     response = requests.request('GET', url, headers=headers, params=url_params)
 
@@ -124,24 +134,53 @@ def query_api(term, location):
 
     # Return JSON
 
+
+@app.route('/yelp-search')
+#@cross_origin(origin='*')
+def get_yelp_business_information():
+    # a = request.args.get('a', 0, type=int)
+    # b = request.args.get('b', 0, type=int)
+    try:
+        business = query_api(DEFAULT_TERM, DEFAULT_LOCATION)
+    except HTTPError as error:
+        sys.exit(
+            'Encountered HTTP error {0} on {1}:\n {2}\nAbort program.'.format(
+                error.code,
+                error.url,
+                error.read(),
+            )
+        )     
+    print("Here we go!!!!!!!!!!!!!!!!")
+    pprint(business, indent=2);
+    return jsonify(business)
+    #return jsonify(result=a + b)
+
+
 # Simple HTTP Server for development only
 class WebServerHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
-        if self.path.endswith("/yelp-api"):
-
-            # restaurants = session.query(Restaurant).all()
-            output = ""
+        if self.path.endswith("/http-server"):
+            try:
+                business = query_api(DEFAULT_TERM, DEFAULT_LOCATION)
+            except HTTPError as error:
+                sys.exit(
+                    'Encountered HTTP error {0} on {1}:\n {2}\nAbort program.'.format(
+                        error.code,
+                        error.url,
+                        error.read(),
+                    )
+                ) 
             self.send_response(200)
-            self.send_header('Content-type', 'text/html')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Content-type', 'application/json')
             self.end_headers()
-            output += "<html><body>"
-            output += "Monkey!"
-            output += "</body></html>"
-            self.wfile.write(output.encode())
-            return
+            # pprint(business, indent=2)
+            # print ("Sending to client...")
+            return business
         else:
-            self.send_error(404, 'File hehe Not Found: %s' % self.path)
+            # self.send_error(404, 'File hehe Not Found: %s' % self.path)
+            return (404, 'File Not Found: %s' % self.path)
 
 def main():
     
@@ -168,4 +207,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    app.secret_key = "secret_in_production123" # Secret!
+    app.debug = True
+    app.run(host='0.0.0.0', port=8080)
+    # main()

@@ -276,25 +276,40 @@ $(document).ready(function() {
 
 $(document).ready(function() {
 	$.ajax({
+        dataType: "json",
         method: 'GET',
-        url: 'https://api.yelp.com/v3/businesses/search',
-        beforeSend: function(request) {
-        	request.setRequestHeader('Authorization', 'Bearer 16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx');
-        },
+        url: 'http://localhost:8080/yelp-search',
+        /*beforeSend: function(request) {
+        	request.setRequestHeader('Access-Control-Allow-Origin', '*');
+        },*/
         data: {
-			'term': 'trifork',
-			'latitude': '56.155178',
-			'longitude': '10.209552',
-			'radius': '200'
+			'search_term': 'trifork',
+			'search_location': 'Aarhus, DK'
 		},
 		error: function(data, status, error) {
-			alert(status + '<br>' + error)
+			alert(status + error)
 		},
 		success: function(data, status) { 
 			alert(status);
+			console.log(data);
 		}
       });
 })
+
+
+
+/*
+$(document).ready(function() {
+	$.getJSON( "http://localhost:8080/http-server" )
+  		.done(function( json ) {
+    	alert("JSON Data: " + json );
+    	})
+    	.fail(function( jqxhr, textStatus, error ) {
+	    var err = textStatus + ", " + error;
+	    alert( "Request Failed: " + err );
+  		})
+})
+*/
 
 
 
