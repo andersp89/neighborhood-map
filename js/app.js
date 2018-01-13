@@ -58,8 +58,8 @@
 			var highlightedIcon = makeMarkerIcon('FF9933');
 			setIconOnMarker(array[id], highlightedIcon);
 			
-			var largeInfowindow = getMapsInfoWindow();//new google.maps.InfoWindow();
-			setInfoWindow(array[id], largeInfowindow)	
+			var largeInfowindow = newMapsInfoWindow();//new google.maps.InfoWindow();
+			setInfoWindowOnMarker(array[id], largeInfowindow)	
 		};
 
 	};
@@ -88,7 +88,7 @@ function initMap() {
 };
 
 function populateMapWithMarkers() {
-	var infoWindow = getMapsInfoWindow();
+	var infoWindow = newMapsInfoWindow();
 	// Create a "highlighted location" marker color by click on marker
 	var highlightedIcon = makeMarkerIcon('FF9933');
 
@@ -107,23 +107,24 @@ function populateMapWithMarkers() {
 
 		// Create an onclick event to open an infowindow at each marker.
 		marker.addListener('click', function() {
-			setInfoWindow(this, infoWindow);
+			setInfoWindowOnMarker(this, infoWindow);
 		});
 
 		marker.addListener('click', function() {
 			setIconOnMarker(this, highlightedIcon)
 		})
 	};
+	// Create Array of Maps markers to activate 
+	// the true marker, when clicking on a list item
 	createMarkerArray(markers);
 }
 
-function getMapsInfoWindow() {
+function newMapsInfoWindow() {
 	return new google.maps.InfoWindow();
 }
 
-// To control where to open window
-function setInfoWindow(marker, infowindow) {
-	// code here to control listitem and 
+// Control where to set info window
+function setInfoWindowOnMarker(marker, infowindow) {
 	if (windowOpened == null) {
 		populateInfoWindow(marker, infowindow);
 		windowOpened = infowindow;
@@ -134,11 +135,22 @@ function setInfoWindow(marker, infowindow) {
 	}
 };
 
+// Control where to set marker
+function setIconOnMarker(marker, highlightedIcon) {
+	if (markerSelected == null) {
+		marker.setIcon(highlightedIcon);
+		markerSelected = marker;
+	} else {
+		markerSelected.setIcon(null);
+		marker.setIcon(highlightedIcon);
+		markerSelected = marker;
+	}
+};
+
 // This function populates the infowindow when the marker is clicked. We'll only allow
 // one infowindow which will open at the marker that is clicked, and populate based
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
-		
 		// Start loading yelp data
 		getYelpData(marker);
 
@@ -159,8 +171,8 @@ function populateInfoWindow(marker, infowindow) {
 		  
 		function getStreetView(data, status) {
 			if (status == google.maps.StreetViewStatus.OK) {
-			  var nearStreetViewLocation = data.location.latLng;
-			  var heading = google.maps.geometry.spherical.computeHeading(
+				var nearStreetViewLocation = data.location.latLng;
+				var heading = google.maps.geometry.spherical.computeHeading(
 				nearStreetViewLocation, marker.position);
 				infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
 				var panoramaOptions = {
@@ -214,13 +226,15 @@ function getYelpData(marker) {
 
 };
 
-
+// Array of Maps markers in memory
+// Used to set right infoWin
 var createMarkerArray = (function(array) {
 	return function() {
 		return array;
 	};
 })(markers);
 
+// Returns a title's id
 function getId(title) {	
 	// Create array of titles
 	var titleArray = [];
@@ -230,18 +244,6 @@ function getId(title) {
 	return titleArray.findIndex(function(search) {
 		return search == title;
 	});
-};
-
-function setIconOnMarker(marker, highlightedIcon) {
-	// Check if marker has been selected
-	if (markerSelected == null) {
-		marker.setIcon(highlightedIcon);
-		markerSelected = marker;
-	} else {
-		markerSelected.setIcon(null);
-		marker.setIcon(highlightedIcon);
-		markerSelected = marker;
-	}
 };
 
 
