@@ -46,7 +46,7 @@
 			}
 		};
 
-		// Set current location
+		// Set current location by click at menu items
 		self.currentLocation = ko.observable( self.locationsList()[0] );
 		self.setCurrentLocation = function(newLocation) {
 			// Initiate variables, to create markers at map
@@ -58,9 +58,10 @@
 			var highlightedIcon = makeMarkerIcon('FF9933');
 			setIconOnMarker(array[id], highlightedIcon);
 			
-			var largeInfowindow = new google.maps.InfoWindow();
+			var largeInfowindow = getMapsInfoWindow();//new google.maps.InfoWindow();
 			setInfoWindow(array[id], largeInfowindow)	
 		};
+
 	};
 
 	ko.applyBindings(new ViewModel())
@@ -82,30 +83,31 @@ function initMap() {
 		mapTypeControl: false
 	});
 
-	var largeInfowindow = new google.maps.InfoWindow();
+	populateMapWithMarkers();
+	showListings();
+};
 
-	// Create a "highlighted location" marker color for when the user
-	// click location.
+function populateMapWithMarkers() {
+	var infoWindow = getMapsInfoWindow();
+	// Create a "highlighted location" marker color by click on marker
 	var highlightedIcon = makeMarkerIcon('FF9933');
 
-	// The following group uses the location array to create an array of markers on initialize.
+	// Create marker for each entry in locations array
 	for (var i = 0; i < locations.length; i++) {
-		// Get the position from the location array.
 		var position = locations[i].location;
 		var title = locations[i].title;
 		
-		// Create a marker per location, and put into markers array.
+		// Create a marker per location, and push into markers array.
 		var marker = new google.maps.Marker({
 			position: position,
 			title: title,
 			id: i
 		});
-		// Push the marker to our array of markers.
 		markers.push(marker);
 
 		// Create an onclick event to open an infowindow at each marker.
 		marker.addListener('click', function() {
-			setInfoWindow(this, largeInfowindow);
+			setInfoWindow(this, infoWindow);
 		});
 
 		marker.addListener('click', function() {
@@ -113,9 +115,13 @@ function initMap() {
 		})
 	};
 	createMarkerArray(markers);
-	showListings();
-};
+}
 
+function getMapsInfoWindow() {
+	return new google.maps.InfoWindow();
+}
+
+// To control where to open window
 function setInfoWindow(marker, infowindow) {
 	// code here to control listitem and 
 	if (windowOpened == null) {
@@ -133,7 +139,8 @@ function setInfoWindow(marker, infowindow) {
 // on that markers position.
 function populateInfoWindow(marker, infowindow) {
 		
-		findYoutubeVideoWithTitle(marker);
+		// Start loading yelp data
+		getYelpData(marker);
 
 		// Check to make sure the infowindow is not already opened on this marker.
 		if (infowindow.marker != marker) {
@@ -149,7 +156,8 @@ function populateInfoWindow(marker, infowindow) {
 		  // In case the status is OK, which means the pano was found, compute the
 		  // position of the streetview image, then calculate the heading, then get a
 		  // panorama from that and set the options
-		  function getStreetView(data, status) {
+		  
+		function getStreetView(data, status) {
 			if (status == google.maps.StreetViewStatus.OK) {
 			  var nearStreetViewLocation = data.location.latLng;
 			  var heading = google.maps.geometry.spherical.computeHeading(
@@ -168,8 +176,7 @@ function populateInfoWindow(marker, infowindow) {
 			  infowindow.setContent('<div>' + marker.title + '</div>' +
 				'<div>No Street View Found</div>');
 			}
-		  }
-
+		}
 
 		  // Use streetview service to get the closest streetview image within
 		  // 50 meters of the markers position
@@ -180,13 +187,29 @@ function populateInfoWindow(marker, infowindow) {
 		}
 };
 
-function findYoutubeVideoWithTitle(marker) {
+function getYelpData(marker) {
 	var title = marker.title;
 
-	//code here
-	// infowindow.setContent
+	$(document).ready(function() {
+		var result = $.ajax({
+	        dataType: "json",
+	        method: 'GET',
+	        url: 'http://localhost:8080/yelp-search',
+	        data: {
+				'search_term': title,
+				'search_location': 'Aarhus, DK'
+			},
+			error: function(data, status, error) {
+				alert(status + error)
+			},
+			success: function(data, status) { 
+				var result = data;
 
-	// API key with KEY parameter.
+				alert(status);
+				console.log(data.rating);
+			}
+	      });
+	})
 
 
 };
@@ -246,83 +269,4 @@ function makeMarkerIcon(markerColor) {
 		new google.maps.Size(21,34));
 	return markerImage;
 };
-
-var token = 'Bearer 16LPrNhV3ioZkBILlg6OV4A3lJOK_RqSMWJJ4_3SWsZWFnPgvJ-um207sFyqXCMr9cDqwY4jIPRfoQgCOr6jw04MF2PGJvJrq5WIJYsLtqG4z7iSFnpvmCXOATNSWnYx';
-
-/*
-$(document).ready(function() {
-	$.ajax({
-        method: 'GET',
-        url: 'https://api.yelp.com/v3/businesses/matches/best',
-        beforeSend: function(request) {
-        	request.setRequestHeader('Authorization:', 'Bearer ' + token);
-        },
-        data: {
-			'name': 'trifork',
-			'city': 'aarhus',
-			'state': '82',
-			'country': 'DK'
-		},
-		error: function(data, status) {
-			alert(status)
-		},
-		success: function(data, status) { 
-			alert(status);
-		}
-      });
-})
-*/
-
-
-$(document).ready(function() {
-	$.ajax({
-        dataType: "json",
-        method: 'GET',
-        url: 'http://localhost:8080/yelp-search',
-        /*beforeSend: function(request) {
-        	request.setRequestHeader('Access-Control-Allow-Origin', '*');
-        },*/
-        data: {
-			'search_term': 'trifork',
-			'search_location': 'Aarhus, DK'
-		},
-		error: function(data, status, error) {
-			alert(status + error)
-		},
-		success: function(data, status) { 
-			alert(status);
-			console.log(data);
-		}
-      });
-})
-
-
-
-/*
-$(document).ready(function() {
-	$.getJSON( "http://localhost:8080/http-server" )
-  		.done(function( json ) {
-    	alert("JSON Data: " + json );
-    	})
-    	.fail(function( jqxhr, textStatus, error ) {
-	    var err = textStatus + ", " + error;
-	    alert( "Request Failed: " + err );
-  		})
-})
-*/
-
-
-
-// Ajax call to youtube API
-/*
-$(document).ready(function(data){
-	$.get('https://api.yelp.com/v3/businesses/search',
-	{
-		'term': 'Köd Restaurant',
-		'latitude': '56.155178',
-		'longitude': '10.209552'
-		},
-	alert("hello" + data))
-});
-*/
 
