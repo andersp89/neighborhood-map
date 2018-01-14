@@ -103,12 +103,66 @@ html, body {
   height: 200px;
 }
 
+/* Begin Yelp CSS */
 #infoWindowYelp {
   width: 200px;
   height: 200px;
   margin: auto;
-  margin-left: 15px;
 }
+
+#yelpLoading {
+  font-style: italic;
+  margin: 5px 15px 0 0;
+}
+
+#yelpCategory {
+  display: inline-block;
+  margin: 0;
+  font-style: italic;
+}
+
+#yelpClosed {
+  display: inline-block;
+  margin: 0;
+  margin-left: 15px;
+  color: red;
+}
+
+#yelpOpened {
+  display: inline-block;
+  margin: 0;
+  margin-left: 15px;
+  color: green;
+}
+
+#yelpAddress {
+  margin: 10px 0 5px;
+}
+
+#yelpPhone {
+  margin: 0;
+}
+
+#yelpReviewLogo {
+  display: inline-block;
+  height: 100%;
+  vertical-align: middle;
+}
+
+#yelpLogo {
+  display: inline-block;
+  height: 100%;
+  width: 70px;
+  vertical-align: middle;
+  margin-left: 10px;
+}
+
+#yelpReviewCount {
+  font-size: 11px;
+  margin: 0;
+}
+
+/* End Yelp CSS */
 
 #execute-request-button {
   margin-top: 50px;

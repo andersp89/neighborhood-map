@@ -10,7 +10,7 @@
 	var locations = [
 		{title: 'Trifork', location: {lat: 56.153944, lng: 10.212539}},
 		{title: 'Köd Restaurant', location: {lat: 56.155178, lng: 10.209552}},
-		{title: 'Aros', location: {lat: 56.153919, lng: 10.199716}},
+		{title: 'ARoS', location: {lat: 56.153919, lng: 10.199716}},
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
 		{title: 'Den Gamle By', location: {lat: 56.158783, lng: 10.192115}},
 		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}},
@@ -155,17 +155,19 @@ function populateInfoWindow(marker, infowindow) {
 	if (infowindow.marker != marker) {
 		// Clear the infowindow content to give the streetview time to load.
 		infowindow.setContent('');
-		infowindow.setContent('<div id="infoWindowContainer"><div id="infoWindowStreet"><p id="infoWindowTitle">' + marker.title + '</p><div id="infoWindowPano"></div></div>' +
-			'<div id="infoWindowYelp"><p id="infoWindowTitle">Yelp Reviews</p><p id="yelpRating"></p><img id="yelpRatingImg"/></div></div>');
+		infowindow.setContent('<div id="infoWindowContainer"><div id="infoWindowYelp"><p id="infoWindowTitle">' +
+			marker.title + '</p><div id="yelpContent"><p id="yelpLoading">Retreiving information from Yelp, please wait...</p></div></div>' +
+			'<div id="infoWindowStreet"><div id="infoWindowPano"></div></div></div>');
 		infowindow.marker = marker;
+		
 		// Make sure the marker property is cleared if the infowindow is closed.
 		infowindow.addListener('closeclick', function() {
 			infowindow.marker = null;
 		});
-		
+		//$('#infoWindowTitle').text("Yelp being loaded...");
 		// Retreive data from Yelp and StreetView about marker location
 		getStreetViewData(marker, infowindow);
-		getYelpData(marker.title, infowindow);
+		getYelpData(marker.title);
 
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
@@ -204,36 +206,66 @@ function getStreetViewData(marker, infowindow) {
 	// 50 meters of the markers position
 	streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 }
-
-
-function getYelpData(title, infowindow) {
-	// var title = titl.title;
-	$(document).ready(function() {
-		var result = $.ajax({
-	        dataType: "json",
-	        method: 'GET',
-	        url: 'http://localhost:8080/yelp-search',
-	        data: {
-				'search_term': title,
-				'search_location': 'Aarhus, DK'
-			},
-			error: function(data, status, error) {
-				alert(status + error)
-			},
-			success: function(data, status) { 
-				console.log(data);
-				if (data.no_business == true){
-					$("#yelpRating").text(data.message);	
-				} else {
-					var yelpRating = data.rating;
-					var imgSrc = setYelpStarsImg(yelpRating);
-					$("#yelpRatingImg").attr("src", imgSrc)
-					$("#yelpRating").text(data.rating);	
-				}
-			}
-	      });
+//	$(document).ajaxStart(function() {
+//		$('#infoWindowYelp').text("Yelp being loaded...");
+//	});
+// AJAX call to server
+function getYelpData(title) {
+	$.ajax({
+		dataType: "json",
+		method: 'GET',
+		url: 'http://localhost:808990/yelp-search',
+		data: {
+			'search_term': title,
+			'search_location': 'Aarhus, DK'
+		},
+		error: function(data, status, error) {
+			console.log(status)
+			yelpErrorMessage(error);
+		},
+		success: function(data, status) { 
+			populateInfoWindowWithYelpData(data);					
+		}
 	})
 };
+
+function yelpErrorMessage(error) {
+	$("#locationTitle").html("Sorry! No information from Yelp is available. Please refer to the following error:" + error);
+}
+
+// Populate infowindow with Yelp Data
+function populateInfoWindowWithYelpData(data) {
+	if (data.no_business == true){
+		$("#yelpContent").text(data.message);	
+	} else {
+		var imgSrc = setYelpStarsImg(data.rating);
+		var openedNow;
+		if (typeof data.hours != 'undefined') {
+			openedNow = isOpenedNow(data.hours[0].is_open_now);
+		} else {
+			openedNow = "";
+		}
+		
+		$("#yelpContent").html(
+			'<div><p id="yelpCategory">'+data.categories[0].title+'</p>'+
+			openedNow +	'<p id="yelpAddress">' + data.location.address1 + 
+			', ' + data.location.city + ' in ' + data.location.country +
+			'<p id="yelpPhone">Tlf.: ' + data.display_phone + '</p>' +
+			'<div id="yelpImgs"><a href="' + data.url + '">' +
+			'<img id="yelpReviewLogo" src="' + imgSrc + '"/>' +
+			'<img id="yelpLogo" src="img/Yelp_trademark_RGB_outline.png"/>'+
+			'</a>'+'</div>' + '<p id="yelpReviewCount">Based on ' +
+			data.review_count + ' Reviews</p>' + '</div>');
+	}
+};
+
+function isOpenedNow(is_open_now) {
+	if (is_open_now == true) {
+		return '<p id="yelpOpened">Open</p>'
+	} else {
+		return '<p id="yelpClosed">Closed</p>'
+	}
+}
 
 function setYelpStarsImg(rating) {
 	var imgSrc;
