@@ -46,6 +46,11 @@ html, body {
   font-size: 15px;
 }
 
+#locationListItems:hover {
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .menuIcon {
   position: absolute;
   left: 222px;

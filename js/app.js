@@ -62,6 +62,15 @@
 			setInfoWindowOnMarker(array[id], largeInfowindow)	
 		};
 
+		// Search function to select markers and list view
+		self.searchValue = ko.observable();
+		self.searchLocations = function() {
+			var searchTerm = self.searchValue();
+			console.log(searchTerm);
+			//Set observalbe array: self.locationsList([])
+		}
+
+
 	};
 
 	ko.applyBindings(new ViewModel())
