@@ -206,32 +206,25 @@ function getStreetViewData(marker, infowindow) {
 	// 50 meters of the markers position
 	streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 }
-//	$(document).ajaxStart(function() {
-//		$('#infoWindowYelp').text("Yelp being loaded...");
-//	});
+
 // AJAX call to server
 function getYelpData(title) {
 	$.ajax({
 		dataType: "json",
 		method: 'GET',
-		url: 'http://localhost:808990/yelp-search',
+		url: 'http://localhost:8080/yelp-search',
 		data: {
 			'search_term': title,
 			'search_location': 'Aarhus, DK'
 		},
 		error: function(data, status, error) {
-			console.log(status)
-			yelpErrorMessage(error);
+			alert("Sorry! No information from Yelp is available. Please refer to the following error: " + error);
 		},
 		success: function(data, status) { 
 			populateInfoWindowWithYelpData(data);					
 		}
 	})
 };
-
-function yelpErrorMessage(error) {
-	$("#locationTitle").html("Sorry! No information from Yelp is available. Please refer to the following error:" + error);
-}
 
 // Populate infowindow with Yelp Data
 function populateInfoWindowWithYelpData(data) {

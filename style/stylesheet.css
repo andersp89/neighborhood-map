@@ -113,6 +113,7 @@ html, body {
 #yelpLoading {
   font-style: italic;
   margin: 5px 15px 0 0;
+  color: orange;
 }
 
 #yelpCategory {
