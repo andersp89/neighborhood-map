@@ -14,7 +14,7 @@
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
 		{title: 'Den Gamle By', location: {lat: 56.158783, lng: 10.192115}},
 		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}},
-		{title: 'Fitness World - Århus C.', location: {lat: 56.144076, lng: 10.199951}}
+		{title: 'Fitness World', location: {lat: 56.144076, lng: 10.199951}}
 	];
 
 	// Binding model to KO for automatic UI refresh
@@ -115,7 +115,7 @@ function populateMapWithMarkers() {
 		})
 	};
 	// Create Array of Maps markers to activate 
-	// the true marker, when clicking on a list item
+	// the true marker, when selecting list items
 	createMarkerArray(markers);
 }
 
@@ -155,56 +155,59 @@ function populateInfoWindow(marker, infowindow) {
 	if (infowindow.marker != marker) {
 		// Clear the infowindow content to give the streetview time to load.
 		infowindow.setContent('');
+		infowindow.setContent('<div id="infoWindowContainer"><div id="infoWindowStreet"><p id="infoWindowTitle">' + marker.title + '</p><div id="infoWindowPano"></div></div>' +
+			'<div id="infoWindowYelp"><p id="infoWindowTitle">Yelp Reviews</p><p id="yelpRating"></p><img id="yelpRatingImg"/></div></div>');
 		infowindow.marker = marker;
 		// Make sure the marker property is cleared if the infowindow is closed.
 		infowindow.addListener('closeclick', function() {
 			infowindow.marker = null;
-	  	});
+		});
 		
-		// Retreive data from Yelp about marker location
-		getYelpData(marker);
+		// Retreive data from Yelp and StreetView about marker location
+		getStreetViewData(marker, infowindow);
+		getYelpData(marker.title, infowindow);
 
-		//getStreetView();
-
-			var streetViewService = new google.maps.StreetViewService();
-			var radius = 50;
-			// In case the status is OK, which means the pano was found, compute the
-			// position of the streetview image, then calculate the heading, then get a
-			// panorama from that and set the options
-		  
-		function getStreetView(data, status) {
-			if (status == google.maps.StreetViewStatus.OK) {
-				var nearStreetViewLocation = data.location.latLng;
-				var heading = google.maps.geometry.spherical.computeHeading(
-				nearStreetViewLocation, marker.position);
-				infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
-				var panoramaOptions = {
-				  position: nearStreetViewLocation,
-				  pov: {
-					heading: heading,
-					pitch: 30
-				  }
-				};
-			  var panorama = new google.maps.StreetViewPanorama(
-				document.getElementById('infoWindowPano'), panoramaOptions);
-			} else {
-			  infowindow.setContent('<div>' + marker.title + '</div>' +
-				'<div>No Street View Found</div>');
-			}
-		}
-
-		  // Use streetview service to get the closest streetview image within
-		  // 50 meters of the markers position
-
-		  streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-		  // Open the infowindow on the correct marker.
-		  infowindow.open(map, marker);
-		}
+		// Open the infowindow on the correct marker.
+		infowindow.open(map, marker);
+	}
 };
 
-function getYelpData(marker) {
-	var title = marker.title;
+function getStreetViewData(marker, infowindow) {
+	var streetViewService = new google.maps.StreetViewService();
+	var radius = 50;
+	
+	// In case the status is OK, which means the pano was found, compute the
+	// position of the streetview image, then calculate the heading, then get a
+	// panorama from that and set the options
+	function getStreetView(data, status) {
+		if (status == google.maps.StreetViewStatus.OK) {
+			var nearStreetViewLocation = data.location.latLng;
+			var heading = google.maps.geometry.spherical.computeHeading(
+			nearStreetViewLocation, marker.position);
+			// infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
+			var panoramaOptions = {
+				position: nearStreetViewLocation,
+				pov: {
+					heading: heading,
+					pitch: 30
+				}
+			};
+			var panorama = new google.maps.StreetViewPanorama(
+				document.getElementById('infoWindowPano'), panoramaOptions);
+		} else {
+			infowindow.setContent('<div>' + marker.title + '</div>' +
+				'<div>No Street View Found</div>');
+		}
+	}
 
+	// Use streetview service to get the closest streetview image within
+	// 50 meters of the markers position
+	streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
+}
+
+
+function getYelpData(title, infowindow) {
+	// var title = titl.title;
 	$(document).ready(function() {
 		var result = $.ajax({
 	        dataType: "json",
@@ -218,16 +221,46 @@ function getYelpData(marker) {
 				alert(status + error)
 			},
 			success: function(data, status) { 
-				var result = data;
-
-				alert(status);
-				console.log(data.rating);
+				console.log(data);
+				if (data.no_business == true){
+					$("#yelpRating").text(data.message);	
+				} else {
+					var yelpRating = data.rating;
+					var imgSrc = setYelpStarsImg(yelpRating);
+					$("#yelpRatingImg").attr("src", imgSrc)
+					$("#yelpRating").text(data.rating);	
+				}
 			}
 	      });
 	})
-
-
 };
+
+function setYelpStarsImg(rating) {
+	var imgSrc;
+	if (rating == 5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_5.png';
+	} else if (rating == 4.5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4_half.png';
+	} else if (rating == 4) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4.png'
+	} else if (rating == 3.5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3_half.png'
+	} else if (rating == 3) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3.png'
+	} else if (rating == 2.5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2_half.png'
+	} else if (rating == 2) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2.png'
+	} else if (rating == 1.5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1_half.png'
+	} else if (rating == 1) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1.png'
+	} else if (rating == 0.5) {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0_half.png'
+	} else {
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png'
+	}
+}
 
 // Array of Maps markers in memory
 // Used to set right infoWin

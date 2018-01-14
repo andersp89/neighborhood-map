@@ -29,8 +29,7 @@ html, body {
   margin: 0 0 5px 5px;
 }
 
-#searhArea {
-  display: inline-block;
+#searchArea {
   vertical-align: middle;
 }
 
@@ -80,15 +79,35 @@ html, body {
   margin: 0;
 }
 
-#infoWindowPano {
+#infoWindowContainer {
+  display: flex;
+  height: 200px;
+  flex-flow: row wrap;
+}
+
+#infoWindowStreet {
   width: 200px;
   height: 200px;
+  margin: auto;
 }
 
 #infoWindowTitle {
   font-size: 15px;
   font-weight: bold;
-  line-height: 25px;
+  line-height: 5px;
+}
+
+/* Set size of street view picture */
+#infoWindowPano {
+  width: 200px;
+  height: 200px;
+}
+
+#infoWindowYelp {
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  margin-left: 15px;
 }
 
 #execute-request-button {

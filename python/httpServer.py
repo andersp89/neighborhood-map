@@ -99,7 +99,7 @@ def query_api(term, location):
     businesses = response.get('businesses')
 
     if not businesses:
-        return (u'No businesses for {0} in {1} found.'.format(term, location))
+        return ({'no_business': True, 'message': u'Sorry, Yelp has no information about {0} in {1}.'.format(term, location)})
 
     business_id = businesses[0]['id']
     response = get_business(API_KEY, business_id)
