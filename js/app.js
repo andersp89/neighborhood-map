@@ -24,7 +24,7 @@
 		this.title = ko.observable(data.title);
 		this.lat = ko.observable(data.location.lat);
 		this.lng = ko.observable(data.location.lng);
-	}
+	};
 
 	var ViewModel = function() {
 		var self = this;
@@ -57,7 +57,7 @@
 		self.setCurrentLocation = function(newLocation) {
 			// Initiate necessitated variables, to create marker at map
 			self.currentLocation(newLocation);			
-			var title = self.currentLocation().title()
+			var title = self.currentLocation().title();
 			var id = getId(title);
 			var array = createMarkerArray();
 
@@ -65,7 +65,7 @@
 			setIconOnMarker(array[id], highlightedIcon);
 			
 			var largeInfowindow = newMapsInfoWindow();
-			setInfoWindowOnMarker(array[id], largeInfowindow)	
+			setInfoWindowOnMarker(array[id], largeInfowindow);
 		};
 
 		
@@ -116,7 +116,7 @@
 			if (searchTerm == "" || null || undefined) {
 				initiateList();
 			}
-		}
+		};
 
 		// Show nothing found style
 		var nothingFound = false;
@@ -125,7 +125,7 @@
 			self.locationsList.removeAll();
 			nothingFound = true;
 			self.showNoResults(true);
-		}
+		};
 		
 		// Update list with matching locations
 		self.updateList = function (foundLocations) {
@@ -147,24 +147,24 @@
 							matchedAnyOfLocations = true;
 						} else {
 							matchedAnyOfLocations = false;
-						};
-					};
+						}
+					}
 					if (matchedAnyOfLocations == false) {
 						valuesToRemove.push(i);
-					};
-				};
+					}
+				}
 
 				// Remove the locations elements from array, to show only the matching
 				// Start from the last element, to avoid interferring with indexing after
 				// splicing
-				for (var i=valuesToRemove.length -1; i>= 0; i--) {
-					self.locationsList.splice(valuesToRemove[i], 1);
-				};
-			};
+				for (var z=valuesToRemove.length -1; z>= 0; z--) {
+					self.locationsList.splice(valuesToRemove[z], 1);
+				}
+			}
 		};
 	};
 
-	ko.applyBindings(new ViewModel())
+	ko.applyBindings(new ViewModel());
 
 //})();
 
@@ -187,7 +187,7 @@ function initMap() {
 	populateMapWithMarkers();
 	// Fit map to markers
 	showListings();
-};
+}
 
 function populateMapWithMarkers() {
 	var infoWindow = newMapsInfoWindow();
@@ -212,9 +212,9 @@ function populateMapWithMarkers() {
 			setInfoWindowOnMarker(this, infoWindow);
 		});
 		marker.addListener('click', function() {
-			setIconOnMarker(this, highlightedIcon)
-		})
-	};
+			setIconOnMarker(this, highlightedIcon);
+		});
+	}
 	// Create Array of Maps markers to activate 
 	// the true marker, when clicking list items of menu
 	createMarkerArray(markers);
@@ -234,7 +234,7 @@ function setInfoWindowOnMarker(marker, infowindow) {
 		populateInfoWindow(marker,infowindow);
 		windowOpened = infowindow;
 	}
-};
+}
 
 // Control where to set marker
 function setIconOnMarker(marker, highlightedIcon) {
@@ -246,7 +246,7 @@ function setIconOnMarker(marker, highlightedIcon) {
 		marker.setIcon(highlightedIcon);
 		markerSelected = marker;
 	}
-};
+}
 
 // Populates the infowindow when the marker is clicked.
 function populateInfoWindow(marker, infowindow) {
@@ -271,7 +271,7 @@ function populateInfoWindow(marker, infowindow) {
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
 	}
-};
+}
 
 function getStreetViewData(marker, infowindow) {
 	var streetViewService = new google.maps.StreetViewService();
@@ -321,8 +321,8 @@ function getYelpData(title) {
 		success: function(data, status) { 
 			populateInfoWindowWithYelpData(data);					
 		}
-	})
-};
+	});
+}
 
 // Populate infowindow with Yelp Data
 function populateInfoWindowWithYelpData(data) {
@@ -348,13 +348,13 @@ function populateInfoWindowWithYelpData(data) {
 			'</a>'+'</div>' + '<p id="yelpReviewCount">Based on ' +
 			data.review_count + ' Reviews</p>' + '</div>');
 	}
-};
+}
 
 function isOpenedNow(is_open_now) {
 	if (is_open_now == true) {
-		return '<p id="yelpOpened">Open</p>'
+		return '<p id="yelpOpened">Open</p>';
 	} else {
-		return '<p id="yelpClosed">Closed</p>'
+		return '<p id="yelpClosed">Closed</p>';
 	}
 }
 
@@ -365,23 +365,23 @@ function setYelpStarsImg(rating) {
 	} else if (rating == 4.5) {
 		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4_half.png';
 	} else if (rating == 4) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4.png';
 	} else if (rating == 3.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3_half.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3_half.png';
 	} else if (rating == 3) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3.png';
 	} else if (rating == 2.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2_half.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2_half.png';
 	} else if (rating == 2) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2.png';
 	} else if (rating == 1.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1_half.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1_half.png';
 	} else if (rating == 1) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1.png';
 	} else if (rating == 0.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0_half.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0_half.png';
 	} else {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png'
+		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png';
 	}
 }
 
@@ -398,12 +398,12 @@ function getId(title) {
 	// Create array of titles
 	var titleArray = [];
 	for (var i = 0; i < locations.length; i++) {
-		titleArray.push(locations[i].title)
+		titleArray.push(locations[i].title);
 	}
 	return titleArray.findIndex(function(search) {
 		return search == title;
 	});
-};
+}
 
 
 // Fit map to markers
@@ -413,9 +413,9 @@ function showListings() {
 	for (var i = 0; i < markers.length; i++) {
 		markers[i].setMap(map);
 		bounds.extend(markers[i].position);
-	};
+	}
 	map.fitBounds(bounds);
-};
+}
 
 // This function takes in a COLOR, and then creates a new marker
 // icon of that color. The icon will be 21 px wide by 34 high, have an origin
@@ -429,5 +429,5 @@ function newMarkerIcon(markerColor) {
 		new google.maps.Point(10, 34),
 		new google.maps.Size(21,34));
 	return markerImage;
-};
+}
 
