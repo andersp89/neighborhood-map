@@ -43,7 +43,7 @@
 		// Hide or show menu by clicking hamburger icon
 		self.showMenu = ko.observable(true);
 		self.ShowHideHamburgerMenu = function() {
-			if (self.showMenu() == true) {
+			if (self.showMenu() === true) {
 				self.showMenu(false);
 				showListings();
 			} else {
@@ -76,7 +76,7 @@
 			// Hide showNoResults style
 			self.showNoResults(false);
 			// Initiate new list, if currently empty
-			if (nothingFound == true) {
+			if (nothingFound === true) {
 				initiateList();
 				nothingFound = false;
 			}
@@ -96,7 +96,7 @@
 					// Search each letter in word
 					for (var x=0; x<searchTerm.length; x++) {
 						// If ALL letters in word match the searched word, then set matchTrue to true
-						if (searchTerm[x] == locationTitle[x] && notFoundLocations[i] == undefined) {
+						if (searchTerm[x] === locationTitle[x] && notFoundLocations[i] === undefined) {
 							matchTrue = true;
 						} else {
 							matchTrue = false;
@@ -104,7 +104,7 @@
 						}
 					}
 					// Update array with all matching words
-					if (matchTrue == true){
+					if (matchTrue === true){
 						foundLocations.push(i);
 					}
 				}
@@ -113,7 +113,7 @@
 			}
 
 			// Update list if search bar is empty
-			if (searchTerm == "" || null || undefined) {
+			if (searchTerm === "" || null || undefined) {
 				initiateList();
 			}
 		};
@@ -131,7 +131,7 @@
 		self.updateList = function (foundLocations) {
 			
 			// If no locations are found
-			if (foundLocations.length == 0){
+			if (foundLocations.length === 0){
 				self.nothingFound();
 				return;
 			}
@@ -143,13 +143,13 @@
 				for (var i=0; i<self.locationsList().length; i++) {
 					var matchedAnyOfLocations = false;
 					for (var x=0; x<foundLocations.length; x++) {
-						if (foundLocations[x] == i || matchedAnyOfLocations == true) {
+						if (foundLocations[x] === i || matchedAnyOfLocations === true) {
 							matchedAnyOfLocations = true;
 						} else {
 							matchedAnyOfLocations = false;
 						}
 					}
-					if (matchedAnyOfLocations == false) {
+					if (matchedAnyOfLocations === false) {
 						valuesToRemove.push(i);
 					}
 				}
@@ -208,16 +208,24 @@ function populateMapWithMarkers() {
 		markers.push(marker);
 
 		// Create an onclick event to open an infowindow and show a marker for each marker.
-		marker.addListener('click', function() {
-			setInfoWindowOnMarker(this, infoWindow);
-		});
-		marker.addListener('click', function() {
-			setIconOnMarker(this, highlightedIcon);
-		});
+		addListenerWindow(marker, infoWindow);
+		addListenerMarker(marker, highlightedIcon);
 	}
 	// Create Array of Maps markers to activate 
 	// the true marker, when clicking list items of menu
 	createMarkerArray(markers);
+}
+
+function addListenerWindow(marker, infoWindow) {
+	marker.addListener('click', function() {
+		setInfoWindowOnMarker(marker, infoWindow);
+	});
+}
+
+function addListenerMarker(marker, highlightedIcon) {
+	marker.addListener('click', function() {
+		setIconOnMarker(marker, highlightedIcon);
+	});
 }
 
 function newMapsInfoWindow() {
@@ -226,7 +234,7 @@ function newMapsInfoWindow() {
 
 // Control where to set info window
 function setInfoWindowOnMarker(marker, infowindow) {
-	if (windowOpened == null) {
+	if (windowOpened === undefined) {
 		populateInfoWindow(marker, infowindow);
 		windowOpened = infowindow;
 	} else {
@@ -238,7 +246,7 @@ function setInfoWindowOnMarker(marker, infowindow) {
 
 // Control where to set marker
 function setIconOnMarker(marker, highlightedIcon) {
-	if (markerSelected == null) {
+	if (markerSelected === undefined) {
 		marker.setIcon(highlightedIcon);
 		markerSelected = marker;
 	} else {
@@ -326,7 +334,7 @@ function getYelpData(title) {
 
 // Populate infowindow with Yelp Data
 function populateInfoWindowWithYelpData(data) {
-	if (data.no_business == true){
+	if (data.no_business === true){
 		$("#yelpContent").text(data.message);	
 	} else {
 		var imgSrc = setYelpStarsImg(data.rating);
@@ -351,7 +359,7 @@ function populateInfoWindowWithYelpData(data) {
 }
 
 function isOpenedNow(is_open_now) {
-	if (is_open_now == true) {
+	if (is_open_now === true) {
 		return '<p id="yelpOpened">Open</p>';
 	} else {
 		return '<p id="yelpClosed">Closed</p>';
@@ -361,27 +369,38 @@ function isOpenedNow(is_open_now) {
 function setYelpStarsImg(rating) {
 	var imgSrc;
 	if (rating == 5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_5.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_5.png';
+		return imgSrc;
 	} else if (rating == 4.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4_half.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_4_half.png';
+		return imgSrc;
 	} else if (rating == 4) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_4.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_4.png';
+		return imgSrc;
 	} else if (rating == 3.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3_half.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_3_half.png';
+		return imgSrc;
 	} else if (rating == 3) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_3.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_3.png';
+		return imgSrc;
 	} else if (rating == 2.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2_half.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_2_half.png';
+		return imgSrc;
 	} else if (rating == 2) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_2.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_2.png';
+		return imgSrc;
 	} else if (rating == 1.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1_half.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_1_half.png';
+		return imgSrc;
 	} else if (rating == 1) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_1.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_1.png';
+		return imgSrc;
 	} else if (rating == 0.5) {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0_half.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_0_half.png';
+		return imgSrc;
 	} else {
-		return imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png';
+		imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png';
+		return imgSrc;
 	}
 }
 
