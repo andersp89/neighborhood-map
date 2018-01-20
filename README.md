@@ -1,6 +1,6 @@
 # Project: Travel Planner 
 ## Desciption
-KnockoutJS app presenting a Google Map with markers. User can:
+Single-page application built on KnockoutJS presenting a Google Map with markers. User can:
 * Filter list and markers by search
 * Click on any marker or list item to get the Google Street View and Yelp data for its location
 
