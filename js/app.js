@@ -1,15 +1,16 @@
 /* Travel Planner - Udacity */
 
 // QUESTIONS:
-// * How could I put initMap and supporting functions in the ViewModel in the IIFE, that is currently commented out?
+// 1) How do I implement all code outside of ViewModel within the ViewModel function itself, so that index still can execute the initMap function?
+// 2) How do I wrap all code in a IIFE, which is commented out currently, so that index still can execute initMap function?
 
 //(function() {
 	//'use strict';
 
-	// Model
+	// Model with data
 	var locations = [
 		{title: 'Trifork', location: {lat: 56.153944, lng: 10.212539}},
-		{title: 'Trifork2', location: {lat: 56.153944, lng: 10.212539}},
+		{title: 'Trifork2', location: {lat: 56.153944, lng: 10.212539}}, // To be deleted
 		{title: 'Köd Restaurant', location: {lat: 56.155178, lng: 10.209552}},
 		{title: 'ARoS', location: {lat: 56.153919, lng: 10.199716}},
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
@@ -25,7 +26,6 @@
 		this.lng = ko.observable(data.location.lng);
 	}
 
-	// ViewModel
 	var ViewModel = function() {
 		var self = this;
 		
@@ -38,9 +38,6 @@
 				self.locationsList.push(new Marker(marker));
 			});
 		}
-		//self.initiateList = function() {
-			
-		//}
 
 		// Hide or show menu by clicking hamburger icon
 		self.showMenu = ko.observable(true);
@@ -55,9 +52,9 @@
 		};
 
 		// Set current location by click at menu items
-		self.currentLocation = ko.observable(); //self.locationsList()[0]
+		self.currentLocation = ko.observable();
 		self.setCurrentLocation = function(newLocation) {
-			// Initiate variables, to create markers at map
+			// Initiate necessitated variables, to create marker at map
 			self.currentLocation(newLocation);			
 			var title = self.currentLocation().title()
 			var id = getId(title);
@@ -70,26 +67,25 @@
 			setInfoWindowOnMarker(array[id], largeInfowindow)	
 		};
 
-		// Search function to select markers and list view
 		
-
-
+		// Search function to find matching markers and list items
 		self.inputText = ko.observable();		
 		self.searchLocations = function() {
+			// Hide showNoResults style
+			self.showNoResults(false);
 			// Initiate new list, if currently empty
 			if (nothingFound == true) {
 				initiateList();
 				nothingFound = false;
 			}
 
-			// Found locations to update list with
+			// Array to hold matching locations
 			var foundLocations = [];
 			var searchTerm = self.inputText().toString().toLowerCase();
 			// Remember words, which do not match all chars in searchTerm
 			var notFoundLocations = [];
 			var matchTrue;
 			
-
 			// Search for word
 			if (searchTerm) {
 				// Search each word in array
@@ -97,21 +93,20 @@
 					var locationTitle = self.locationsList()[i].title().toLowerCase();
 					// Search each letter in word
 					for (var x=0; x<searchTerm.length; x++) {
+						// If ALL letters in word match the searched word, then set matchTrue to true
 						if (searchTerm[x] == locationTitle[x] && notFoundLocations[i] == undefined) {
 							matchTrue = true;
 						} else {
 							matchTrue = false;
 							notFoundLocations[i] = i;
-							//notFoundLocations.push(i)
-							//$("#locationList").text("Nothing found!")
 						}
-
-						
 					}
+					// Update array with all matching words
 					if (matchTrue == true){
 						foundLocations.push(i);
 					}
 				}
+				// Update list with the matching words
 				self.updateList(foundLocations);
 			}
 
@@ -122,81 +117,49 @@
 			}
 		}
 
+		// Show nothing found style
 		var nothingFound = false;
+		self.showNoResults = ko.observable();
 		self.nothingFound = function (){
-			console.log("Nothing found removes!")
 			self.locationsList.removeAll();
 			nothingFound = true;
-			//$("#locationList").text("Nothing found!")
-
+			self.showNoResults(true);
 		}
 		
+		// Update list with matching locations
 		self.updateList = function (foundLocations) {
-			// Update observable array with locations found
-			// If foundlocations has anything
 			
-
-			//valuesToRemove.length = 0;
+			// If no locations are found
 			if (foundLocations.length == 0){
 				self.nothingFound();
-				//console.log("nothing found!")
-				//self.locationsList.removeAll();
 				return;
 			}
 
+			// Build array of locations not to show
 			var valuesToRemove = [];
-
-			//console.log("updating list....")
 			if (foundLocations) {
-				// Select all elements of array to remove, except those found in search
-				console.log("updating list");
-				console.log(foundLocations.length);
-				//var valuesToRemove = [];
 				var onceFound = [];
-				
-				// Make array of locations, that did not match either foundLocations (if more than 1)
 				for (var i=0; i<self.locationsList().length; i++) {
 					var matchedAnyOfLocations = false;
 					for (var x=0; x<foundLocations.length; x++) {
 						if (foundLocations[x] == i || matchedAnyOfLocations == true) {
-							console.log("hey!")
 							matchedAnyOfLocations = true;
 						} else {
 							matchedAnyOfLocations = false;
-						}
-					}
+						};
+					};
 					if (matchedAnyOfLocations == false) {
 						valuesToRemove.push(i);
-					}
-				}
+					};
+				};
 
-				//console.log(valuesToRemove.length);
-				// Remove elements
+				// Remove the locations elements from array, to show only the matching
+				// Start from the last element, to avoid interferring with indexing after
+				// splicing
 				for (var i=valuesToRemove.length -1; i>= 0; i--) {
 					self.locationsList.splice(valuesToRemove[i], 1);
-				}
-
-
-/*
-				for (var i=0; i<currentList; i++) {					
-					for (var x=0; x<foundLocations.length; x++) {
-						if (i != foundLocations[x]) {
-							console.log("alt undetagen id skal slettes: " + foundLocations[x]);
-							self.locationsList.splice(i, 1);
-						} 
-						//else {
-						//	self.locationsList.remove(self.locationsList()[i]);
-						//}	
-					}
-				
-				} */
-			// Update list with found words
-			// first empty
-			// except those found
-			//console.log(self.locationsList()[0])						
-			}
-			
-
+				};
+			};
 		};
 	};
 
@@ -204,7 +167,7 @@
 
 //})();
 
-/* Google Maps API */
+/* Google Maps API and related functions */
 
 var map;
 var markers = [];
@@ -219,7 +182,9 @@ function initMap() {
 		mapTypeControl: false
 	});
 
+	// Create markers on map
 	populateMapWithMarkers();
+	// Fit map to markers
 	showListings();
 };
 
@@ -229,7 +194,7 @@ function populateMapWithMarkers() {
 	var highlightedIcon = newMarkerIcon('FF9933');
 
 	// Create marker for each entry in locations array
-	for (var i = 0; i < locations.length; i++) {
+	for (var i = 0; i < locations.length; i++) { //To-do: when this code is integrated with ViewModel, then should this refer to observable array instead.
 		var position = locations[i].location;
 		var title = locations[i].title;
 		
@@ -241,17 +206,16 @@ function populateMapWithMarkers() {
 		});
 		markers.push(marker);
 
-		// Create an onclick event to open an infowindow at each marker.
+		// Create an onclick event to open an infowindow and show a marker for each marker.
 		marker.addListener('click', function() {
 			setInfoWindowOnMarker(this, infoWindow);
 		});
-
 		marker.addListener('click', function() {
 			setIconOnMarker(this, highlightedIcon)
 		})
 	};
 	// Create Array of Maps markers to activate 
-	// the true marker, when selecting list items
+	// the true marker, when clicking list items of menu
 	createMarkerArray(markers);
 }
 
@@ -283,24 +247,22 @@ function setIconOnMarker(marker, highlightedIcon) {
 	}
 };
 
-// This function populates the infowindow when the marker is clicked. We'll only allow
-// one infowindow which will open at the marker that is clicked, and populate based
-// on that markers position.
+// Populates the infowindow when the marker is clicked.
 function populateInfoWindow(marker, infowindow) {
-	// Check to make sure the infowindow is not already opened on this marker.
+	// Make sure the infowindow is not already opened on this marker.
 	if (infowindow.marker != marker) {
 		// Clear the infowindow content to give the streetview time to load.
 		infowindow.setContent('');
 		infowindow.setContent('<div id="infoWindowContainer"><div id="infoWindowYelp"><p id="infoWindowTitle">' +
-			marker.title + '</p><div id="yelpContent"><p id="yelpLoading">Retreiving information from Yelp, please wait...</p></div></div>' +
-			'<div id="infoWindowStreet"><div id="infoWindowPano"></div></div></div>');
+			marker.title + '</p><div id="yelpContent"><p id="yelpLoading">Retreiving information from Yelp, plea' +
+			'se wait...</p></div></div><div id="infoWindowStreet"><div id="infoWindowPano"></div></div></div>');
 		infowindow.marker = marker;
 		
-		// Make sure the marker property is cleared if the infowindow is closed.
+		// Ensure that the marker property is cleared if the infowindow is closed.
 		infowindow.addListener('closeclick', function() {
 			infowindow.marker = null;
 		});
-		//$('#infoWindowTitle').text("Yelp being loaded...");
+
 		// Retreive data from Yelp and StreetView about marker location
 		getStreetViewData(marker, infowindow);
 		getYelpData(marker.title);
@@ -322,7 +284,6 @@ function getStreetViewData(marker, infowindow) {
 			var nearStreetViewLocation = data.location.latLng;
 			var heading = google.maps.geometry.spherical.computeHeading(
 			nearStreetViewLocation, marker.position);
-			// infowindow.setContent('<div id="infoWindowTitle">' + marker.title + '</div><div id="infoWindowPano"></div>');
 			var panoramaOptions = {
 				position: nearStreetViewLocation,
 				pov: {
@@ -343,7 +304,7 @@ function getStreetViewData(marker, infowindow) {
 	streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 }
 
-// AJAX call to server
+// AJAX call to server, to retrieve data from Yelp
 function getYelpData(title) {
 	$.ajax({
 		dataType: "json",
@@ -423,8 +384,8 @@ function setYelpStarsImg(rating) {
 	}
 }
 
-// Array of Maps markers in memory
-// Used to set right infoWin
+// Array of Maps markers in memory, to set the right marker
+// and infowindow when list items is being clicked
 var createMarkerArray = (function(array) {
 	return function() {
 		return array;
@@ -444,7 +405,7 @@ function getId(title) {
 };
 
 
-// This function will loop through the markers array and display them all.
+// Fit map to markers
 function showListings() {
 	var bounds = new google.maps.LatLngBounds();
 	// Extend the boundaries of the map for each marker and display the marker

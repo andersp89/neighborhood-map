@@ -5,17 +5,12 @@ import json
 from pprint import pprint
 import requests
 import sys
-import urllib
 from http.server import BaseHTTPRequestHandler, HTTPServer
-
-from urllib.error import HTTPError
 from urllib.parse import quote
-from urllib.parse import urlencode
+from urllib.error import HTTPError
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-
-# from flask.ext.cors import cross_origin
 
 app = Flask(__name__)
 # Enable Cross-Origin Resource Sharing (CORS)
@@ -30,7 +25,7 @@ SEARCH_PATH = '/v3/businesses/search'
 BUSINESS_PATH = '/v3/businesses/'  # Business ID will come after slash.
 SEARCH_LIMIT = 1
 
-# Request helper function
+# Request helper function to search and get_business functions
 def request_yelp(host, path, api_key, url_params=None):
     """Given your API_KEY, send a GET request to the API.
 
@@ -42,9 +37,6 @@ def request_yelp(host, path, api_key, url_params=None):
 
     Returns:
         dict: The JSON response from the request.
-
-    Raises:
-        HTTPError: An error occurs from the HTTP request.
     """
     url_params = url_params or {}
     url = '{0}{1}'.format(host, quote(path.encode('utf8')))
@@ -106,6 +98,7 @@ def query_api(term, location):
     return response
 
 
+# Used by AJAX function, to request Yelp data
 @app.route('/yelp-search')
 def get_yelp_business_information():
     search_term = request.args.get('search_term', type=str)

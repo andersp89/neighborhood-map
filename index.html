@@ -13,6 +13,7 @@
           <input id="locationSearch" data-bind="textInput: inputText, event: { keyup: searchLocations }" placeholder="Search location here">
           <button data-bind="click: searchLocations">Search</button>
         </div>
+        <div id="noResults" data-bind="visible: showNoResults">Sorry, no results matched your search - try again.</div>
         <ul data-bind="foreach: locationsList" id="locationList">
           <li data-bind="text: title, click: $parent.setCurrentLocation" id="locationListItems"></li>
         </ul>

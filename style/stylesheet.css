@@ -38,6 +38,14 @@ html, body {
   margin: 0 0 10px 5px;
 }
 
+#noResults {
+  width: 100%;
+  line-height: 20px;
+  color: red;
+  font-size: 12px;
+  margin: 5px;
+}
+
 #locationList {
   list-style: none;
   padding: 0;
