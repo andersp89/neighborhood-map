@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-# import argparse
 import json
 from pprint import pprint
 import requests

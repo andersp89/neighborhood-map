@@ -67,6 +67,10 @@ html, body {
   z-index: 1;
 }
 
+.menuIcon:hover {
+ cursor: pointer; 
+}
+
 .menuIconHidden {
   left: 0px;
 }
