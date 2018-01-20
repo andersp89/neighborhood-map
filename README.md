@@ -1,29 +1,20 @@
-# Project: Catalog App 
+# Project: Travel Planner 
 ## Desciption
-Flask web app supporting CRUD operations on a catalog with categories and items, with authentication using OAuth2.0 with LinkedIn.
+KnockoutJS app presenting a Google Map with markers. User can:
+* Filter list and markers by search
+* Select any marker to get Google Street View and Yelp data
 
 ## Technology
-* Python
+* Python3
 * Flask 
-* OAuth2.0
-* SQLAlchemy
-* SQLite
-* VirtualBox with Vagrant
+* KnockoutJS
+* jQuery
+* Google Maps
 
 ## Deploy code
-To install the dependencies, run: pip install -r requirements.txt.
-
-Run the code sample without specifying any arguments: python sample.py
-
-Run the code sample by specifying the optional arguments: python sample.py --term="bars" --location="San Francisco, CA"
-
-1. Install VirtualBox: https://www.virtualbox.org/wiki/Download_Old_Builds_5_1
-2. Install Vagrant: https://www.vagrantup.com/downloads.html
-3. Download VM configuration: https://d17h27t6h515a5.cloudfront.net/topher/2017/August/59822701_fsnd-virtual-machine/fsnd-virtual-machine.zip
-4. In terminal cd into "vagrant" directory.
-5. Start virtual machine in terminal by running "vagrant up"
-6. Log-in to virtual machine in terminal by running "vagrant ssh"
-7. Clone this repository to your "vagrant" directory.
-8. Create database by running "python database_setup.py" in terminal
-12. Execute python script by running "python application.py" in terminal
-13. Enjoy!
+1. Clone this repository to your local drive.
+2. In your terminal, cd into the "python" folder inside the downloaded folder.
+3. Install the non-standard Python3 modules used, by running in your terminal: pip install -r requirements.txt.
+4. Run the webserver by running in your terminal: python3 webserver.py
+5. Go to the root of the downloaded folder and open the "index.html"-file in your browser.
+6. That's it - have fun! :-)
