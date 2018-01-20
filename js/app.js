@@ -34,6 +34,7 @@
 		initiateList();
 
 		function initiateList() {
+			self.locationsList.removeAll();
 			locations.forEach(function(marker) {
 				self.locationsList.push(new Marker(marker));
 			});
@@ -71,6 +72,7 @@
 		// Search function to find matching markers and list items
 		self.inputText = ko.observable();		
 		self.searchLocations = function() {
+			initiateList();
 			// Hide showNoResults style
 			self.showNoResults(false);
 			// Initiate new list, if currently empty
@@ -112,7 +114,6 @@
 
 			// Update list if search bar is empty
 			if (searchTerm == "" || null || undefined) {
-				self.locationsList.removeAll();
 				initiateList();
 			}
 		}
