@@ -10,8 +10,8 @@
       <div data-bind="visible: showMenu" class="locationMenu">
         <h1 id="locationTitle">Travel planner</h1>
         <div id="searchArea">
-          <input id="locationSearch" data-bind="textInput: searchValue, event: { keyup: searchLocations }" placeholder="Search location here">
-          <button>Search</button>
+          <input id="locationSearch" data-bind="textInput: inputText, event: { keyup: searchLocations }" placeholder="Search location here">
+          <button data-bind="click: searchLocations">Search</button>
         </div>
         <ul data-bind="foreach: locationsList" id="locationList">
           <li data-bind="text: title, click: $parent.setCurrentLocation" id="locationListItems"></li>

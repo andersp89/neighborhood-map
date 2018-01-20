@@ -9,6 +9,7 @@
 	// Model
 	var locations = [
 		{title: 'Trifork', location: {lat: 56.153944, lng: 10.212539}},
+		{title: 'Trifork2', location: {lat: 56.153944, lng: 10.212539}},
 		{title: 'Köd Restaurant', location: {lat: 56.155178, lng: 10.209552}},
 		{title: 'ARoS', location: {lat: 56.153919, lng: 10.199716}},
 		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
@@ -30,9 +31,16 @@
 		
 		// Initiate list of locations
 		self.locationsList = ko.observableArray([]);
-		locations.forEach(function(marker) {
-			self.locationsList.push(new Marker(marker));
-		});
+		initiateList();
+
+		function initiateList() {
+			locations.forEach(function(marker) {
+				self.locationsList.push(new Marker(marker));
+			});
+		}
+		//self.initiateList = function() {
+			
+		//}
 
 		// Hide or show menu by clicking hamburger icon
 		self.showMenu = ko.observable(true);
@@ -47,7 +55,7 @@
 		};
 
 		// Set current location by click at menu items
-		self.currentLocation = ko.observable( self.locationsList()[0] );
+		self.currentLocation = ko.observable(); //self.locationsList()[0]
 		self.setCurrentLocation = function(newLocation) {
 			// Initiate variables, to create markers at map
 			self.currentLocation(newLocation);			
@@ -58,19 +66,138 @@
 			var highlightedIcon = newMarkerIcon('FF9933');
 			setIconOnMarker(array[id], highlightedIcon);
 			
-			var largeInfowindow = newMapsInfoWindow();//new google.maps.InfoWindow();
+			var largeInfowindow = newMapsInfoWindow();
 			setInfoWindowOnMarker(array[id], largeInfowindow)	
 		};
 
 		// Search function to select markers and list view
-		self.searchValue = ko.observable();
+		
+
+
+		self.inputText = ko.observable();		
 		self.searchLocations = function() {
-			var searchTerm = self.searchValue();
-			console.log(searchTerm);
-			//Set observalbe array: self.locationsList([])
+			// Initiate new list, if currently empty
+			if (nothingFound == true) {
+				initiateList();
+				nothingFound = false;
+			}
+
+			// Found locations to update list with
+			var foundLocations = [];
+			var searchTerm = self.inputText().toString().toLowerCase();
+			// Remember words, which do not match all chars in searchTerm
+			var notFoundLocations = [];
+			var matchTrue;
+			
+
+			// Search for word
+			if (searchTerm) {
+				// Search each word in array
+				for (var i=0; i<self.locationsList().length; i++) {
+					var locationTitle = self.locationsList()[i].title().toLowerCase();
+					// Search each letter in word
+					for (var x=0; x<searchTerm.length; x++) {
+						if (searchTerm[x] == locationTitle[x] && notFoundLocations[i] == undefined) {
+							matchTrue = true;
+						} else {
+							matchTrue = false;
+							notFoundLocations[i] = i;
+							//notFoundLocations.push(i)
+							//$("#locationList").text("Nothing found!")
+						}
+
+						
+					}
+					if (matchTrue == true){
+						foundLocations.push(i);
+					}
+				}
+				self.updateList(foundLocations);
+			}
+
+			// Update list if search bar is empty
+			if (searchTerm == "" || null || undefined) {
+				self.locationsList.removeAll();
+				initiateList();
+			}
 		}
 
+		var nothingFound = false;
+		self.nothingFound = function (){
+			console.log("Nothing found removes!")
+			self.locationsList.removeAll();
+			nothingFound = true;
+			//$("#locationList").text("Nothing found!")
 
+		}
+		
+		self.updateList = function (foundLocations) {
+			// Update observable array with locations found
+			// If foundlocations has anything
+			
+
+			//valuesToRemove.length = 0;
+			if (foundLocations.length == 0){
+				self.nothingFound();
+				//console.log("nothing found!")
+				//self.locationsList.removeAll();
+				return;
+			}
+
+			var valuesToRemove = [];
+
+			//console.log("updating list....")
+			if (foundLocations) {
+				// Select all elements of array to remove, except those found in search
+				console.log("updating list");
+				console.log(foundLocations.length);
+				//var valuesToRemove = [];
+				var onceFound = [];
+				
+				// Make array of locations, that did not match either foundLocations (if more than 1)
+				for (var i=0; i<self.locationsList().length; i++) {
+					var matchedAnyOfLocations = false;
+					for (var x=0; x<foundLocations.length; x++) {
+						if (foundLocations[x] == i || matchedAnyOfLocations == true) {
+							console.log("hey!")
+							matchedAnyOfLocations = true;
+						} else {
+							matchedAnyOfLocations = false;
+						}
+					}
+					if (matchedAnyOfLocations == false) {
+						valuesToRemove.push(i);
+					}
+				}
+
+				//console.log(valuesToRemove.length);
+				// Remove elements
+				for (var i=valuesToRemove.length -1; i>= 0; i--) {
+					self.locationsList.splice(valuesToRemove[i], 1);
+				}
+
+
+/*
+				for (var i=0; i<currentList; i++) {					
+					for (var x=0; x<foundLocations.length; x++) {
+						if (i != foundLocations[x]) {
+							console.log("alt undetagen id skal slettes: " + foundLocations[x]);
+							self.locationsList.splice(i, 1);
+						} 
+						//else {
+						//	self.locationsList.remove(self.locationsList()[i]);
+						//}	
+					}
+				
+				} */
+			// Update list with found words
+			// first empty
+			// except those found
+			//console.log(self.locationsList()[0])						
+			}
+			
+
+		};
 	};
 
 	ko.applyBindings(new ViewModel())
@@ -227,7 +354,7 @@ function getYelpData(title) {
 			'search_location': 'Aarhus, DK'
 		},
 		error: function(data, status, error) {
-			alert("Sorry! No information from Yelp is available. Please refer to the following error: " + error);
+			alert("Sorry! No information from Yelp is available. Please refer to the following error: " + status);
 		},
 		success: function(data, status) { 
 			populateInfoWindowWithYelpData(data);					
