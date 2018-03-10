@@ -9,14 +9,13 @@
 
 	// Model with data
 	var locations = [
-		{title: 'Trifork', location: {lat: 56.153944, lng: 10.212539}},
-		{title: 'Trifork2', location: {lat: 56.153944, lng: 10.212539}}, // To be deleted
-		{title: 'Köd Restaurant', location: {lat: 56.155178, lng: 10.209552}},
+		{title: 'Dokk1', location: {lat: 56.153553, lng: 10.214211}},
+		{title: 'Magasin', location: {lat: 56.157123, lng: 10.206952}},
 		{title: 'ARoS', location: {lat: 56.153919, lng: 10.199716}},
-		{title: 'Stående Pige', location: {lat: 56.152135, lng: 10.200845}},
+		{title: 'Musikhuset Aarhus', location: {lat: 56.152800, lng: 10.199335}},
 		{title: 'Den Gamle By', location: {lat: 56.158783, lng: 10.192115}},
 		{title: 'Latiner Kvarteret', location: {lat: 56.158775, lng: 10.210766}},
-		{title: 'Fitness World', location: {lat: 56.144076, lng: 10.199951}}
+		{title: 'Frederiksbjerg Idrætscenter', location: {lat: 56.144028, lng: 10.197061}}
 	];
 
 	// Binding model to KO for automatic UI refresh
