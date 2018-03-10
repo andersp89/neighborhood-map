@@ -1,8 +1,8 @@
 /* Travel Planner - Udacity */
 
 // QUESTIONS:
-// 1) How do I implement all code outside of ViewModel within the ViewModel function itself, so that index still can execute the initMap function?
-// 2) How do I wrap all code in a IIFE, which is commented out currently, so that index still can execute initMap function?
+// 1) How do I implement all code that is now outside of the ViewModel function within the ViewModel function itself? If I try, index.html cannot execute the initMap function.
+// 2) How do I wrap all code in a IIFE, which is commented out currently, so that index.html still can execute initMap function?
 
 //(function() {
 	//'use strict';
@@ -71,10 +71,18 @@
 		// Search function to find matching markers and list items
 		self.inputText = ko.observable();		
 		self.searchLocations = function() {
-			initiateList();
 			// Hide showNoResults style
 			self.showNoResults(false);
-			// Initiate new list, if currently empty
+
+			// Initiate new list, to search all locations
+			initiateList();
+
+			// Show all markers
+			for (var x=0; x<markers.length; x++) {
+				markers[x].setVisible(true);
+			};
+
+			// Initiate new list, if no results found
 			if (nothingFound === true) {
 				initiateList();
 				nothingFound = false;
@@ -83,32 +91,36 @@
 			// Array to hold matching locations
 			var foundLocations = [];
 			var searchTerm = self.inputText().toString().toLowerCase();
-			// Remember words, which do not match all chars in searchTerm
+			// Remember words, which do not match ALL chars in searchTerm in array
 			var notFoundLocations = [];
-			var matchTrue;
+			var match;
 			
-			// Search for word
+			// Search in list for search term
 			if (searchTerm) {
-				// Search each word in array
+				// Search each word in locations list
 				for (var i=0; i<self.locationsList().length; i++) {
 					var locationTitle = self.locationsList()[i].title().toLowerCase();
-					// Search each letter in word
+					// Search each letter in search term
 					for (var x=0; x<searchTerm.length; x++) {
-						// If ALL letters in word match the searched word, then set matchTrue to true
+						// If ALL letters in location's title match the searched word, then set matchTrue to true
 						if (searchTerm[x] === locationTitle[x] && notFoundLocations[i] === undefined) {
-							matchTrue = true;
+							match = true;
 						} else {
-							matchTrue = false;
-							notFoundLocations[i] = i;
+							match = false;							
+							notFoundLocations.push(i);
+							break;
 						}
 					}
+					
 					// Update array with all matching words
-					if (matchTrue === true){
-						foundLocations.push(i);
+					if (match === true){
+						foundLocations.push(i)
 					}
 				}
-				// Update list with the matching words
-				self.updateList(foundLocations);
+				
+				// Update list with the matching words and non-matching words
+				// Send both matching words, to decide if none are found and non-matching to remove those from list.
+				self.updateListAndMap(foundLocations, notFoundLocations);
 			}
 
 			// Update list if search bar is empty
@@ -121,45 +133,43 @@
 		var nothingFound = false;
 		self.showNoResults = ko.observable();
 		self.nothingFound = function (){
+			// Remove all list items
 			self.locationsList.removeAll();
-			nothingFound = true;
+			
+			// Hide all markers
+			for (var x=0; x<markers.length; x++) {
+				markers[x].setVisible(false);
+			};
+
+			// Show no results html element
 			self.showNoResults(true);
+			nothingFound = true;
 		};
 		
-		// Update list with matching locations
-		self.updateList = function (foundLocations) {
-			
+		// Update list and map with matching locations
+		self.updateListAndMap = function (foundLocations, notFoundLocations) {			
 			// If no locations are found
 			if (foundLocations.length === 0){
 				self.nothingFound();
 				return;
 			}
 
-			// Build array of locations not to show
-			var valuesToRemove = [];
-			if (foundLocations) {
-				var onceFound = [];
-				for (var i=0; i<self.locationsList().length; i++) {
-					var matchedAnyOfLocations = false;
-					for (var x=0; x<foundLocations.length; x++) {
-						if (foundLocations[x] === i || matchedAnyOfLocations === true) {
-							matchedAnyOfLocations = true;
-						} else {
-							matchedAnyOfLocations = false;
-						}
-					}
-					if (matchedAnyOfLocations === false) {
-						valuesToRemove.push(i);
-					}
-				}
-
-				// Remove the locations elements from array, to show only the matching
-				// Start from the last element, to avoid interferring with indexing after
-				// splicing
-				for (var z=valuesToRemove.length -1; z>= 0; z--) {
-					self.locationsList.splice(valuesToRemove[z], 1);
-				}
+			// Remove the locations elements from array, to show only the matching
+			// Start from the last element, to avoid interferring with indexing after
+			// splicing
+			for (var z=notFoundLocations.length -1; z>= 0; z--) {
+				self.locationsList.splice(notFoundLocations[z], 1);
 			}
+
+			// Hide markers not found in search
+			for (var i=0; i<markers.length; i++) {
+				for (var k=0; k<notFoundLocations.length; k++) {
+					if (notFoundLocations[k] === markers[i].id) {
+						markers[i].setVisible(false);
+					}
+				}
+			};
+
 		};
 	};
 
@@ -194,8 +204,8 @@ function populateMapWithMarkers() {
 	var highlightedIcon = newMarkerIcon('FF9933');
 
 	// Create marker for each entry in locations array
-	for (var i = 0; i < locations.length; i++) { //To-do: when this code is integrated with ViewModel, then should this refer to observable array instead.
-		var position = locations[i].location;
+	for (var i = 0; i < locations.length; i++) { // To-do: when this code is integrated with ViewModel, then should this refer to observable array instead.
+		var position = locations[i].location; 
 		var title = locations[i].title;
 		
 		// Create a marker per location, and push into markers array.
@@ -215,17 +225,20 @@ function populateMapWithMarkers() {
 	createMarkerArray(markers);
 }
 
+//DOM
 function addListenerWindow(marker, infoWindow) {
 	marker.addListener('click', function() {
 		setInfoWindowOnMarker(marker, infoWindow);
 	});
 }
 
+//DOM
 function addListenerMarker(marker, highlightedIcon) {
 	marker.addListener('click', function() {
 		setIconOnMarker(marker, highlightedIcon);
 	});
 }
+
 
 function newMapsInfoWindow() {
 	return new google.maps.InfoWindow();
@@ -266,6 +279,7 @@ function populateInfoWindow(marker, infowindow) {
 			'se wait...</p></div></div><div id="infoWindowStreet"><div id="infoWindowPano"></div></div></div>');
 		infowindow.marker = marker;
 		
+		//DOM
 		// Ensure that the marker property is cleared if the infowindow is closed.
 		infowindow.addListener('closeclick', function() {
 			infowindow.marker = null;
@@ -273,7 +287,7 @@ function populateInfoWindow(marker, infowindow) {
 
 		// Retreive data from Yelp and StreetView about marker location
 		getStreetViewData(marker, infowindow);
-		getYelpData(marker.title);
+		getYelpData(marker.title, infowindow);
 
 		// Open the infowindow on the correct marker.
 		infowindow.open(map, marker);
@@ -312,8 +326,8 @@ function getStreetViewData(marker, infowindow) {
 	streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 }
 
-// AJAX call to server, to retrieve data from Yelp
-function getYelpData(title) {
+// AJAX call to web server, to retrieve data from Yelp
+function getYelpData(title, infowindow) {
 	$.ajax({
 		dataType: "json",
 		method: 'GET',
@@ -326,15 +340,23 @@ function getYelpData(title) {
 			alert("Sorry! No information from Yelp is available. Please refer to the following error: " + status);
 		},
 		success: function(data, status) { 
-			populateInfoWindowWithYelpData(data);					
+			populateInfoWindowWithYelpData(data, infowindow);					
 		}
 	});
 }
 
+//DOM
 // Populate infowindow with Yelp Data
-function populateInfoWindowWithYelpData(data) {
+function populateInfoWindowWithYelpData(data, infowindow) {
 	if (data.no_business === true){
-		$("#yelpContent").text(data.message);	
+		// TODO! FIxes. virker ikke.
+
+		console.log(infowindow.getContent())
+		var exist = infowindow.getContent();
+		infowindow.setContent(exist+data.message);
+		//infowindow.setContent(data.message);
+		//TODO!
+		//$("#yelpContent").text(data.message);	
 	} else {
 		var imgSrc = setYelpStarsImg(data.rating);
 		var openedNow;
@@ -344,6 +366,7 @@ function populateInfoWindowWithYelpData(data) {
 			openedNow = "";
 		}
 		
+		//TODO!
 		$("#yelpContent").html(
 			'<div><p id="yelpCategory">'+data.categories[0].title+'</p>'+
 			openedNow +	'<p id="yelpAddress">' + data.location.address1 + 
