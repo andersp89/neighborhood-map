@@ -18,7 +18,7 @@ html, body {
   height: 100%;
   line-height: 35px;
   padding: 10px 10px 0px 10px;
-  width: 200px;
+  width: 220px;
   margin: 0;
   position: absolute;
 }
@@ -36,6 +36,7 @@ html, body {
 #locationSearch {
   font-size: 12px;
   margin: 0 0 10px 5px;
+  width: 65%;
 }
 
 #noResults {
@@ -61,7 +62,7 @@ html, body {
 
 .menuIcon {
   position: absolute;
-  left: 222px;
+  left: 242px;
   width: 40px;
   margin: 0 0 0 5px;
   z-index: 1;
@@ -80,7 +81,7 @@ html, body {
   position: absolute;
   bottom:0px;
   height: 100%;
-  left: 222px;
+  left: 242px;
   right: 0px;
   padding: 0;
   margin: 0;
@@ -120,7 +121,7 @@ html, body {
   height: 200px;
 }
 
-/* Begin Yelp CSS */
+/* Yelp Styles */
 #infoWindowYelp {
   width: 200px;
   height: 200px;
@@ -131,6 +132,14 @@ html, body {
   font-style: italic;
   margin: 5px 15px 0 0;
   color: orange;
+  line-height: 20px;
+}
+
+#yelpErrorMsg {
+  font-style: italic;
+  margin: 5px 15px 0 0;
+  color: red;
+  line-height: 20px;
 }
 
 #yelpCategory {
@@ -178,6 +187,21 @@ html, body {
 #yelpReviewCount {
   font-size: 11px;
   margin: 0;
+}
+
+/* Google Styles */
+.google-error {
+  text-align: center;
+  vertical-align: middle;
+  line-height: 100vh;
+  font-size: 1.5em;
+}
+
+#googleErrorMsg {
+  margin-top: 50px;
+  text-align: center;
+  color: red;
+  line-height: 20px;
 }
 
 /* End Yelp CSS */
