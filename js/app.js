@@ -27,12 +27,12 @@ var locationModel = function(marker) {
 			new google.maps.Point(10, 34),
 			new google.maps.Size(21,34));
 		return markerImage;
-	}
+	};
 
 	// Google Maps infowindow
 	this.newMapsInfoWindow = function() {
 		return new google.maps.InfoWindow();
-	}
+	};
 
 	// Basic location information from locations array
 	this.location = marker.location;
@@ -84,9 +84,9 @@ var viewModel = function() {
 		var bounds = new google.maps.LatLngBounds();
 		// Extend the boundaries of the map for each marker and display the marker
 		self.locationsList().forEach(function(e){
-			e.marker.setMap(map)
-			bounds.extend(e.marker.position)
-		})
+			e.marker.setMap(map);
+			bounds.extend(e.marker.position);
+		});
 		map.fitBounds(bounds);
 	}();
 	
@@ -96,7 +96,7 @@ var viewModel = function() {
 			self.setIconOnMarker(e.marker);//, highlightedIcon);
 			self.populateInfoWindow(e.marker);
 		});
-	})
+	});
 
 	// Control where to set marker
 	var markerSelected;
@@ -109,7 +109,7 @@ var viewModel = function() {
 			marker.setIcon(marker.newMarkerIcon);
 			markerSelected = marker;
 		}
-	}
+	};
 		
 	// Populates the infowindow when the marker is clicked.
 	this.populateInfoWindow = function(marker){
@@ -128,7 +128,7 @@ var viewModel = function() {
 			self.getStreetViewData(marker);
 			self.getYelpData(marker.title);
 		}
-	}
+	};
 
 	this.googleError = ko.observable();
 	this.getStreetViewData = function(marker) {
@@ -166,7 +166,7 @@ var viewModel = function() {
 		// Use streetview service to get the closest streetview image within
 		// 50 meters of the markers position
 		streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
-	}
+	};
 
 	// AJAX call to web server, to retrieve data from Yelp
 	this.getYelpData = function(title) {
@@ -185,7 +185,7 @@ var viewModel = function() {
 				self.populateInfoWindowWithYelpData(data, title);
 			}
 		});
-	}
+	};
 		
 	this.yelpMsg = ko.observable();
 	// Populate infowindow with Yelp Data
@@ -197,7 +197,7 @@ var viewModel = function() {
 
 		// Check if Yelp information is available and populate window
 		if (data.no_business === true){
-			self.yelpMsg('<p id="yelpErrorMsg">' + data.message + '</p>')
+			self.yelpMsg('<p id="yelpErrorMsg">' + data.message + '</p>');
 		} else {
 			var imgSrc = self.setYelpStarsImg(data.rating);
 			var openedNow;
@@ -217,7 +217,7 @@ var viewModel = function() {
 				'</a>'+'</div>' + '<p id="yelpReviewCount">Based on ' +
 				data.review_count + ' Reviews</p>' + '</div>');
 		}
-	}
+	};
 
 	this.isOpenedNow = function(is_open_now) {
 		if (is_open_now === true) {
@@ -225,7 +225,7 @@ var viewModel = function() {
 		} else {
 			return '<p id="yelpClosed">Closed</p>';
 		}
-	}
+	};
 
 	this.setYelpStarsImg = function(rating) {
 		var imgSrc;
@@ -263,7 +263,7 @@ var viewModel = function() {
 			imgSrc = 'img/yelp_stars/web_and_ios/small/small_0.png';
 			return imgSrc;
 		}
-	}
+	};
 
 	// Hide or show menu by clicking hamburger icon
 	this.showMenu = ko.observable(true);
@@ -294,7 +294,7 @@ var viewModel = function() {
 		if (filteredLocations === false) {
 			self.locationsList().forEach(function(e) {
 				e.marker.setVisible(true);
-			})
+			});
 			return;
 		}
 
@@ -302,9 +302,9 @@ var viewModel = function() {
 		if (!filteredLocations.length) {
 			self.locationsList().forEach(function(e) {
 				e.marker.setVisible(false);
-		  })
+		  	});
 			return;
-		};
+		}
 
 		// Remove markers, not found in filtered list
 		self.locationsList().forEach(function(e) {
@@ -317,9 +317,9 @@ var viewModel = function() {
 				} else {
 					e.marker.setVisible(false);
 				} 
-			})
-		})			
-	}
+			});
+		});
+	};
 
 	// Filter list with search query
 	self.searchQuery = ko.observable("");
@@ -353,11 +353,11 @@ var viewModel = function() {
 var model;
 function initMap() {
 	// Apply data bindings to viewmodel
-	model = new viewModel;
+	model = new viewModel();
 	ko.applyBindings(model);
 }
 
 var mapsErrorHandler = function() {
 	$(".container").append("<div class='google-error'>Google Maps can't be loaded</div>");
 
-}
+};
