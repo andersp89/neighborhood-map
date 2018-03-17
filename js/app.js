@@ -33,6 +33,9 @@
 		//this.lng = ko.observable(data.location.lng);
 		//this.location = ko.observable(data)
 
+		// This function takes in a COLOR, and then creates a new marker
+		// icon of that color. The icon will be 21 px wide by 34 high, have an origin
+		// of 0, 0 and be anchored at 10, 34).
 		this.newMarkerIcon = function(markerColor) {
 			var markerImage = new google.maps.MarkerImage(
 				'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
@@ -48,7 +51,7 @@
 			return new google.maps.InfoWindow();
 		}
 
-		  // basic location information from locations.js
+		  // basic location information from locations
 		  this.location = marker.location;
 		  this.title = marker.title;
 		  this.id = marker.id;
@@ -79,13 +82,13 @@
 
 	};
 	
-	var map;
-	var viewModel = function() {
-	
+
+var viewModel = function() {
+
 	// skulle ikke være nødvendigt med disse mærkelige vars!
 //TEST!	var markers = [];
-var markerSelected;
-var windowOpened;
+
+//var windowOpened;
 
 
 	var self = this;
@@ -94,14 +97,15 @@ var windowOpened;
 	
 	// HERFRA TODO!	
 	// Constructor creates a new map - only center and zoom are required.
-	map = new google.maps.Map(document.getElementById('map'), {
+	
+	var map = new google.maps.Map(document.getElementById('map'), {
 		center: {lat: 56.15431, lng: 10.207227},
 		zoom: 15,
 		//scaleControl: true,
 		mapTypeControl: false
 	});
 
-	// TODO!
+
 	this.infoWindow = new google.maps.InfoWindow();
 	//console.log("hurray map lavet!")
 	// Initiate list of locations
@@ -119,11 +123,50 @@ var windowOpened;
 	
 
 	// Create markers on map
-	populateMapWithMarkers();
-	// Fit map to markers
-	showListings();
+			this.showListings = function() {
+			//console.log("hello")
+			var bounds = new google.maps.LatLngBounds();
+			// Extend the boundaries of the map for each marker and display the marker
 
-		function populateMapWithMarkers() {
+			self.locationsList().forEach(function(e){
+				e.marker.setMap(map)
+				bounds.extend(e.marker.position)
+			})
+			map.fitBounds(bounds);
+
+	/*		for (var i=0; i<self.locationsList().length; i++) {
+				var marker = self.locationsList()[i].marker;
+				self.locationsList()[i].marker.setMap(map)
+
+				//console.log(self.locationsList()[i].marker)
+
+				bounds.extend(marker.position)
+			}
+			map.fitBounds(bounds);
+*/
+			/*
+			for (var i = 0; i < markers.length; i++) {
+				markers[i].setMap(map);
+				bounds.extend(markers[i].position);
+			}
+			map.fitBounds(bounds);
+			*/
+		}();
+		// Fit map to markers
+	//this.showListings();
+	
+	// Add window and highlight marker at click
+	this.locationsList().forEach(function(e){
+		//addListenerWindow(e.marker);
+		//addListenerMarker(e.marker);
+		e.marker.addListener('click', function() {
+				self.setIconOnMarker(e.marker);//, highlightedIcon);
+				self.populateInfoWindow(e.marker);
+			});
+		
+	})
+/*
+		this.populateMapWithMarkers = function() {
 			//var infoWindow = newMapsInfoWindow();
 			// Create a "highlighted location" marker color by click on marker
 
@@ -162,42 +205,23 @@ var windowOpened;
 			// to do!
 			//createMarkerArray(markers);
 		}
-
+this.populateMapWithMarkers();*/
 		// integrer showListings med populateMapWithMarkers?
 		// Fit map to markers
-		function showListings() {
-			//console.log("hello")
-			var bounds = new google.maps.LatLngBounds();
-			// Extend the boundaries of the map for each marker and display the marker
 
-			
-			for (var i=0; i<self.locationsList().length; i++) {
-				var marker = self.locationsList()[i].marker;
-				self.locationsList()[i].marker.setMap(map)
 
-				//console.log(self.locationsList()[i].marker)
 
-				bounds.extend(marker.position)
-			}
-			map.fitBounds(bounds);
 
-			/*
-			for (var i = 0; i < markers.length; i++) {
-				markers[i].setMap(map);
-				bounds.extend(markers[i].position);
-			}
-			map.fitBounds(bounds);
-			*/
-		}
+
 
 //PRØVES!
 		// ER ÆNDRET!
-		function addListenerWindow(marker){//, infoWindow) {
+	/*	function addListenerWindow(marker){//, infoWindow) {
 			marker.addListener('click', function() {
 				populateInfoWindow(marker);
 				//setInfoWindowOnMarker(marker, infoWindow);
 			}); 
-
+*/
 		//	marker.addListener('domready', function() {
 		//		ko.applybindings(self, $("infoWindowContainer"));
 		//		setInfoWindowOnMarker(marker, infoWindow)
@@ -214,20 +238,20 @@ var windowOpened;
 		//        });
 
 
-		}
+////		}
 
-		function addListenerMarker(marker){//, highlightedIcon) {
+/*		function addListenerMarker(marker){//, highlightedIcon) {
 			marker.addListener('click', function() {
 				setIconOnMarker(marker);//, highlightedIcon);
 			});
 		}
-
+*/
 		// TOdo - hvad gør jeg lige her? Hvordan kobler jeg sammen med list items?
 		//this.infoWindow = newMapsInfoWindow();
 		// Kan slettes!
-		function newMapsInfoWindow() {
-			return new google.maps.InfoWindow();
-		}
+//		function newMapsInfoWindow() {
+//			return new google.maps.InfoWindow();
+//		}
 
 
 		// Slettes!!
@@ -248,7 +272,8 @@ var windowOpened;
 
 		// Kan også slettes? kan jeg ikke bare lave en icon, som infoWindow?
 		// Control where to set marker
-		function setIconOnMarker(marker){//, highlightedIcon) {
+		var markerSelected;
+		this.setIconOnMarker = function(marker){//, highlightedIcon) {
 			if (markerSelected === undefined) {
 				marker.setIcon(marker.newMarkerIcon);
 				markerSelected = marker;
@@ -268,7 +293,7 @@ var windowOpened;
 
 		// Populates the infowindow when the marker is clicked.
 		
-		function populateInfoWindow(marker){//, infowindow) { //slet evt. infowindow
+		this.populateInfoWindow = function(marker){//, infowindow) { //slet evt. infowindow
 			// Make sure the infowindow is not already opened on this marker.
 
 			// ÆNDRER ALLE INFOWINDOW TIL SELF! + stort W!
@@ -302,8 +327,8 @@ var windowOpened;
 				});
 
 				// Retreive data from Yelp and StreetView about marker location
-				getStreetViewData(marker);
-				getYelpData(marker.title);
+				self.getStreetViewData(marker);
+				self.getYelpData(marker.title);
 
 				// Open the infowindow on the correct marker.
 				//infowindow.open(map, marker);
@@ -311,7 +336,7 @@ var windowOpened;
 		}
 
 		this.googleError = ko.observable();
-		function getStreetViewData(marker) {
+		this.getStreetViewData = function(marker) {
 			var streetViewService = new google.maps.StreetViewService();
 			var radius = 50;
 			
@@ -350,7 +375,7 @@ var windowOpened;
 		}
 
 		// AJAX call to web server, to retrieve data from Yelp
-		function getYelpData(title) {
+		this.getYelpData = function(title) {
 			$.ajax({
 				dataType: "json",
 				method: 'GET',
@@ -363,7 +388,7 @@ var windowOpened;
 					alert("Sorry! No information from Yelp is available. Please refer to the following error: " + status);
 				},
 				success: function(data, status) { 
-					populateInfoWindowWithYelpData(data, title);
+					self.populateInfoWindowWithYelpData(data, title);
 				}
 			});
 		}
@@ -371,7 +396,7 @@ var windowOpened;
 		
 		this.yelpMsg = ko.observable();
 		// Populate infowindow with Yelp Data
-		function populateInfoWindowWithYelpData(data, title) {
+		this.populateInfoWindowWithYelpData = function(data, title) {
 			//self.myMessage("hello")
 			ko.cleanNode($('#yelpContent')[0]); // remove previous button binding
 			ko.applyBindings(model, $('#yelpContent')[0]); // re-apply button binding
@@ -383,10 +408,10 @@ var windowOpened;
 				//self.yelpError(data.message)
 				//$("#yelpContent").text(data.message);	
 			} else {
-				var imgSrc = setYelpStarsImg(data.rating);
+				var imgSrc = self.setYelpStarsImg(data.rating);
 				var openedNow;
 				if (typeof data.hours != 'undefined') {
-					openedNow = isOpenedNow(data.hours[0].is_open_now);
+					openedNow = self.isOpenedNow(data.hours[0].is_open_now);
 				} else {
 					openedNow = "";
 				}
@@ -418,7 +443,7 @@ var windowOpened;
 			}
 		}
 
-		function isOpenedNow(is_open_now) {
+		this.isOpenedNow = function(is_open_now) {
 			if (is_open_now === true) {
 				return '<p id="yelpOpened">Open</p>';
 			} else {
@@ -426,7 +451,7 @@ var windowOpened;
 			}
 		}
 
-		function setYelpStarsImg(rating) {
+		this.setYelpStarsImg = function(rating) {
 			var imgSrc;
 			if (rating == 5) {
 				imgSrc = 'img/yelp_stars/web_and_ios/small/small_5.png';
@@ -496,6 +521,7 @@ var windowOpened;
 		// This function takes in a COLOR, and then creates a new marker
 		// icon of that color. The icon will be 21 px wide by 34 high, have an origin
 		// of 0, 0 and be anchored at 10, 34).
+		/*
 		function newMarkerIcon(markerColor) {
 			var markerImage = new google.maps.MarkerImage(
 				'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
@@ -505,7 +531,7 @@ var windowOpened;
 				new google.maps.Point(10, 34),
 				new google.maps.Size(21,34));
 			return markerImage;
-		}
+		} */
 
 	 //Hertil TODO
 
@@ -515,10 +541,10 @@ var windowOpened;
 		self.ShowHideHamburgerMenu = function() {
 			if (self.showMenu() === true) {
 				self.showMenu(false);
-				showListings();
+				//showListings();
 			} else {
 				self.showMenu(true);
-				showListings();
+				//showListings();
 			}
 		};
 
@@ -537,9 +563,9 @@ var windowOpened;
 			//var highlightedIcon = newMarkerIcon('FF9933');
 			//var largeInfowindow = newMapsInfoWindow();
 			
-			setIconOnMarker(marker);//, marker.newMarkerIcon);
+			self.setIconOnMarker(marker);//, marker.newMarkerIcon);
 			//setInfoWindowOnMarker(marker, self.infoWindow);
-			populateInfoWindow(marker);
+			self.populateInfoWindow(marker);
 			
 /*			console.log(marker)
 			//console.log(newLocation)
@@ -570,6 +596,7 @@ var windowOpened;
 		//searchLocations på key up. 
 
 		this.updateMarkers = function(filteredLocations) {
+		// Show all markers, if search bar is empty
 		if (filteredLocations === false) {
 			self.locationsList().forEach(function(e) {
 				e.marker.setVisible(true);
@@ -585,14 +612,17 @@ var windowOpened;
 			return;
 		};
 
-		self.locationsList().forEach(function(e, i) {
+		self.locationsList().forEach(function(e) {
 			var found;
 			filteredLocations.forEach(function(k) {
 				if (e.id === k.id || found === true){
-					self.locationsList()[i].marker.setVisible(true);	
+					//self.locationsList()[i].marker.setVisible(true);	
+					e.marker.setVisible(true);
 					found = true;
 				} else {
-					self.locationsList()[i].marker.setVisible(false);
+					e.marker.setVisible(false);
+					//self.locationsList()[i].marker.setVisible(false);
+
 				} 
 			})
 		})			
