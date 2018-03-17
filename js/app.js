@@ -202,16 +202,16 @@ var windowOpened;
 		//		ko.applybindings(self, $("infoWindowContainer"));
 		//		setInfoWindowOnMarker(marker, infoWindow)
 		//	});
-	            /*
-	             * When the info window opens, bind it to Knockout.
-	             * Only do this once.
-	             */
-	    //        google.maps.event.addListener(self.infoWindow, 'domready', function () {
-	    //            if (!isInfoWindowLoaded) {
-	    //                ko.applyBindings(self, $("#info-window")[0]);
-	    //               isInfoWindowLoaded = true;
-	    //            }
-	    //        });
+				/*
+				 * When the info window opens, bind it to Knockout.
+				 * Only do this once.
+				 */
+		//        google.maps.event.addListener(self.infoWindow, 'domready', function () {
+		//            if (!isInfoWindowLoaded) {
+		//                ko.applyBindings(self, $("#info-window")[0]);
+		//               isInfoWindowLoaded = true;
+		//            }
+		//        });
 
 
 		}
@@ -335,7 +335,7 @@ var windowOpened;
 				} else {
 					
 					ko.cleanNode($('#infoWindowStreet')[0]); // remove previous button binding
-    				ko.applyBindings(model, $('#infoWindowStreet')[0]); // re-apply button binding
+					ko.applyBindings(model, $('#infoWindowStreet')[0]); // re-apply button binding
 
 					
 					self.googleError('<p id="googleErrorMsg">Sorry, no Google Street View found for ' + marker.title + '</p>');
@@ -374,12 +374,12 @@ var windowOpened;
 		function populateInfoWindowWithYelpData(data, title) {
 			//self.myMessage("hello")
 			ko.cleanNode($('#yelpContent')[0]); // remove previous button binding
-   			ko.applyBindings(model, $('#yelpContent')[0]); // re-apply button binding
+			ko.applyBindings(model, $('#yelpContent')[0]); // re-apply button binding
 
 			if (data.no_business === true){
 				//console.log(self.myMessage())
 				
-    			self.yelpMsg('<p id="yelpErrorMsg">' + data.message + '</p>')
+				self.yelpMsg('<p id="yelpErrorMsg">' + data.message + '</p>')
 				//self.yelpError(data.message)
 				//$("#yelpContent").text(data.message);	
 			} else {
@@ -476,6 +476,7 @@ var windowOpened;
 
 		// kan slettes eller bruges i search?
 		// Returns a title's id
+		/*
 		function getId(title) {	
 			// Create array of titles
 			var titleArray = [];
@@ -485,7 +486,7 @@ var windowOpened;
 			return titleArray.findIndex(function(search) {
 				return search == title;
 			});
-		}
+		} */
 
 
 // Kopierete show listings herfra!
@@ -521,6 +522,7 @@ var windowOpened;
 			}
 		};
 
+
 		// Set current location by click at menu items
 		self.currentLocation = ko.observable();
 		self.setCurrentLocation = function(clickedItem) {
@@ -528,17 +530,17 @@ var windowOpened;
 			self.currentLocation(clickedItem);	
 
 			var marker = clickedItem.marker;
-		    map.setCenter(marker.getPosition());
-    		//map.setZoom(13);
-    		//toggleBounce(marker); // måske?
-    		
+			map.setCenter(marker.getPosition());
+			//map.setZoom(13);
+			//toggleBounce(marker); // måske?
+			
 			//var highlightedIcon = newMarkerIcon('FF9933');
 			//var largeInfowindow = newMapsInfoWindow();
-    		
-    		setIconOnMarker(marker);//, marker.newMarkerIcon);
-    		//setInfoWindowOnMarker(marker, self.infoWindow);
-    		populateInfoWindow(marker);
-    		
+			
+			setIconOnMarker(marker);//, marker.newMarkerIcon);
+			//setInfoWindowOnMarker(marker, self.infoWindow);
+			populateInfoWindow(marker);
+			
 /*			console.log(marker)
 			//console.log(newLocation)
 			//console.log(self.currentLocation())		
@@ -564,10 +566,66 @@ var windowOpened;
 		}
 		*/
 
+		// inputText value fra ipnut felt
+		//searchLocations på key up. 
 
-		self.inputText = ko.observable();		
+		this.updateMarkers = function(filteredLocations) {
+		if (filteredLocations === false) {
+			self.locationsList().forEach(function(e) {
+				e.marker.setVisible(true);
+			})
+			return;
+		}
+
+
+		if (!filteredLocations.length) {
+			self.locationsList().forEach(function(e) {
+				e.marker.setVisible(false);
+		  })
+			return;
+		};
+
+		self.locationsList().forEach(function(e, i) {
+			var found;
+			filteredLocations.forEach(function(k) {
+				if (e.id === k.id || found === true){
+					self.locationsList()[i].marker.setVisible(true);	
+					found = true;
+				} else {
+					self.locationsList()[i].marker.setVisible(false);
+				} 
+			})
+		})			
+		}
+
+		self.searchQuery = ko.observable("");
+		self.searchClick = ko.observable();	
+		this.filteredLocations = ko.computed(function() {
+		// Array to search in
+		var originalLocations = self.locationsList();
+		// Search string
+		var searchQuery = self.searchQuery().toLowerCase();
+		var searchClick = self.searchClick();
+		
+		// Show all markers and list items, if search bar is empty
+		if (!searchQuery) {
+		  self.updateMarkers(false);
+		  return originalLocations;
+		}
+
+		// Filter list for search word
+		var filteredLocations = originalLocations.filter(function(option) {
+		  return option.title.toLowerCase().indexOf(searchQuery) === 0;
+		});
+
+		self.updateMarkers(filteredLocations);
+		return filteredLocations;
+	});
+
+
+/*
 		self.searchLocations = function() {
-			
+			var filterString = this.inputText().toLowerCase();
 			// Hide showNoResults style
 			self.showNoResults(false);
 
@@ -583,10 +641,10 @@ var windowOpened;
 				self.locationsList()[i].marker.setVisible(true);
 			}
 
-			/*for (var x=0; x<markers.length; x++) {
-				markers[x].setVisible(true);
-			}; */
-			
+		//	for (var x=0; x<markers.length; x++) {
+		//		markers[x].setVisible(true);
+		//	}; 
+
 			// Initiate new list, if no results found
 			if (nothingFound === true) {
 				//T2 initiateList();
@@ -638,8 +696,9 @@ var windowOpened;
 			}
 		};
 
+*/
 		// Show nothing found style
-		var nothingFound;
+/*		var nothingFound;
 		self.showNoResults = ko.observable();
 		self.nothingFound = function (){
 			// Remove all list items of menu and close infoWindow pop up
@@ -721,8 +780,9 @@ var windowOpened;
 
 			// Update map according to markers
 			//showListings();
-
+/*
 		};
+*/
 	};
 
 	//ko.applyBindings(new ViewModel());

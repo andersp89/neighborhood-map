@@ -11,11 +11,22 @@
       <div data-bind="visible: showMenu" class="locationMenu">
         <h1 id="locationTitle">Travel planner</h1>
         <div id="searchArea">
-          <input id="locationSearch" data-bind="textInput: inputText, event: { keyup: searchLocations }" placeholder="Search location here">
-          <button data-bind="click: searchLocations">Search</button>
+          
+          <!-- DENNE SKAL IKKE HAVE KEYUP SEARCHLOCATIONS, DEN SKAL BARE LEVERE INPUTTEXT VIA KEYUP -->
+          
+          <input id="locationSearch" data-bind="value: searchQuery, valueUpdate: 'keyup'" placeholder="Search location here">
+          <!--<input id="locationSearch" data-bind="textInput: inputText, event: { keyup: searchLocations }" placeholder="Search location here">-->
+          <button data-bind="click: searchClick">Search</button>
         </div>
-        <div id="noResults" data-bind="visible: showNoResults">Sorry, no results matched your search - try again.</div>
-        <ul data-bind="foreach: locationsList" id="locationList">
+
+        <div id="noResults" data-bind="visible: !filteredLocations().length">Sorry, no results matched your search - try again.</div>
+        <!--<div id="noResults" data-bind="visible: showNoResults">Sorry, no results matched your search - try again.</div>-->
+        
+        <!-- DENNE SKAL BINDES OP PÅ COMPUTED OBSERVABLE I STEDET FOR! -->
+
+        <!--
+        <ul data-bind="foreach: locationsList" id="locationList"> -->
+        <ul data-bind="foreach: filteredLocations" id="locationList">
           <li data-bind="text: title, click: $parent.setCurrentLocation" id="locationListItems"></li>
         </ul>
       </div>
